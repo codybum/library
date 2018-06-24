@@ -2,6 +2,6 @@ package io.cresco.library.agent;
 
 
 public interface AgentService {
-	Agent getAgent();
+	AgentState getAgentState();
 	void msgIn(String msg);
 }
