@@ -141,8 +141,7 @@
                         com.codahale.*;
                         org.slf4j.*;
                         org.LatencyUtils;
-                        org.osgi.service.log.*;
-                        io.cody.task
+                        org.osgi.service.log.*
                     </Export-Package>
                     <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                 </instructions>
