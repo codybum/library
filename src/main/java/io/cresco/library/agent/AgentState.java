@@ -1,16 +1,22 @@
 package io.cresco.library.agent;
 
 import io.cresco.library.messaging.MsgEvent;
-import org.osgi.framework.BundleContext;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class Agent implements Serializable {
+public class AgentState implements Serializable {
     /**
      * Only needed for ECF generic transport
      */
     private static final long serialVersionUID = 5117254163782139591L;
+
+    String agentName;
+    String regionName;
+
+    public String getRegion() { return regionName;};
+    public String getAgent() { return agentName;}
+
 
     String id;
     String title;
@@ -62,6 +68,8 @@ public class Agent implements Serializable {
     public void msgIn(MsgEvent msg) {
         //    logger.trace("msgIn : " + msg.getParams().toString());
         //    msgInProcessQueue.submit(new MsgRoute(this, msg));
+        System.out.println("MESSAGE IN AGENT!!! " + msg.getParams().toString());
+
     }
 
 }
