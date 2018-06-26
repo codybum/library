@@ -11,11 +11,12 @@ public class AgentState implements Serializable {
      */
     private static final long serialVersionUID = 5117254163782139591L;
 
-    String agentName;
-    String regionName;
 
-    public String getRegion() { return regionName;};
-    public String getAgent() { return agentName;}
+    public String getRegion() { return agentStateEngine.getRegion();};
+    public String getAgent() { return agentStateEngine.getAgent();}
+
+    //public String getRegion() { return "agent";};
+    //public String getAgent() { return "region";}
 
 
     String id;
@@ -24,36 +25,24 @@ public class AgentState implements Serializable {
     Date dueDate;
     boolean finished;
 
+
+    private AgentStateEngine agentStateEngine;
+
+    public AgentState(AgentStateEngine agentStateEngine) {
+        this.agentStateEngine = agentStateEngine;
+    }
+
+    /*
+    public void setAgentStateEngine(AgentStateEngine agentStateEngine) {
+        this.agentStateEngine = agentStateEngine;
+    }
+    */
+
     public String getId() {
         return id;
     }
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public Date getDueDate() {
-        return dueDate;
-    }
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-    public boolean isFinished() {
-        return finished;
-    }
-    public void setFinished(boolean finished) {
-        this.finished = finished;
     }
 
     public void sendMessage(String message) {

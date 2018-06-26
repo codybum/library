@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class PluginBuilder {
 
-    private AgentService agentService = null;
+    private AgentService agentService;
     private LogService logService;
     private Config config;
     private CrescoMeterRegistry crescoMeterRegistry;
@@ -33,7 +33,7 @@ public class PluginBuilder {
                 boolean assign = sr.isAssignableTo(context.getBundle(), AgentService.class.getName());
 
                 if (assign) {
-                    agentService = (AgentService) context.getService(sr);
+                    this.agentService = (AgentService) context.getService(sr);
                 } else {
                     System.out.println("Could not assign AgentService!");
                 }
@@ -97,5 +97,12 @@ public class PluginBuilder {
         return new CLogger(this,baseClassName,issuingClassName,level);
     }
     public boolean isIPv6() { return false; }
-
+    public MsgEvent sendRPC(MsgEvent msg) {
+        //msg.setParam("is_rpc", "true");
+        //return this.rpc.call(msg);
+        return msg;
+    }
+    public void sendMsgEvent(MsgEvent msg) {
+        //this.msgOutQueue.add(msg);
+    }
 }

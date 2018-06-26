@@ -17,7 +17,9 @@
     <commons.version>1.10</commons.version>
     <junit.version>4.12</junit.version>
     <activemq.version>5.15.4</activemq.version>
+    <orientdb.version>2.2.36</orientdb.version>
 </properties>
+
 
 <dependencies>
 
@@ -108,6 +110,46 @@
         <version>1.0.5</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>25.1-jre</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+    <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>4.5.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.googlecode.concurrentlinkedhashmap</groupId>
+        <artifactId>concurrentlinkedhashmap-lru</artifactId>
+        <version>1.4.2</version>
+    </dependency>
+
+
+    <!-- OrientDB -->
+
+    <!-- Embedded: 1. core 2. graphdb -->
+    <!-- Stand Alone: 1. graphdb 2. core -->
+
+    <dependency>
+        <groupId>com.orientechnologies</groupId>
+        <artifactId>orientdb-core</artifactId>
+        <version>${orientdb.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>com.orientechnologies</groupId>
+        <artifactId>orientdb-graphdb</artifactId>
+        <version>${orientdb.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
 
 
 </dependencies>
@@ -141,6 +183,11 @@
                     <Embed-Dependency>!org.osgi.*;*</Embed-Dependency>
                     <Export-Package>
                         io.cresco.library.*;
+                        com.google.*;
+                        com.googlecode.concurrentlinkedhashmap.*;
+                        com.orientechnologies.*;
+                        com.tinkerpop.*;
+                        com.sun.jna.*;
                         javax.*;
                         org.apache.*;
                         org.springframework.*;
