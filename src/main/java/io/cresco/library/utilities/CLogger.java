@@ -2,6 +2,8 @@ package io.cresco.library.utilities;
 
 
 import io.cresco.library.messaging.MsgEvent;
+import io.cresco.library.plugin.PluginBuilder;
+import org.osgi.service.log.LogService;
 
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
@@ -22,34 +24,18 @@ public class CLogger {
             return check.getValue() <= this.getValue();
         }
     }
-    private String region;
-    private String agent;
-    private String plugin;
     private Level level;
-    private BlockingQueue<MsgEvent> msgOutQueue;
-    private Class issuingClass;
+    private String issuingClassName;
+    private String baseClassName;
+    private PluginBuilder pluginBuilder;
+    private LogService logService;
 
-    
-    public CLogger(BlockingQueue<MsgEvent> msgOutQueue, String region, String agent, String plugin) {
-        this(msgOutQueue, region, agent, plugin, Level.Info);
-    }
-
-    public CLogger(BlockingQueue<MsgEvent> msgOutQueue, String region, String agent, String plugin, Level level) {
-        this.region = region;
-        this.agent = agent;
-        this.plugin = plugin;
+    public CLogger(PluginBuilder pluginBuilder, String baseClassName, String issuingClassName, Level level) {
+        this.pluginBuilder = pluginBuilder;
+        this.baseClassName = baseClassName;
+        this.issuingClassName = issuingClassName.substring(baseClassName.length() +1, issuingClassName.length()) ;
         this.level = level;
-        this.msgOutQueue = msgOutQueue;
-    }
-
-    public CLogger(Class issuingClass, BlockingQueue<MsgEvent> msgOutQueue, String region, String agent, String plugin) {
-        this(msgOutQueue, region, agent, plugin);
-        this.issuingClass = issuingClass;
-    }
-
-    public CLogger(Class issuingClass, BlockingQueue<MsgEvent> msgOutQueue, String region, String agent, String plugin, Level level) {
-        this(msgOutQueue, region, agent, plugin, level);
-        this.issuingClass = issuingClass;
+        logService = pluginBuilder.getLogService();
     }
 
     public void error(String logMessage) {
@@ -102,8 +88,14 @@ public class CLogger {
         trace(replaceBrackets(logMessage, params));
     }
 
-    public void log(String logMessage, Level level) {
+    public void log(String messageBody, Level level) {
 
+        //String className = log.getParam("full_class");
+        String logMessage = "[" + pluginBuilder.getPluginID() + ": " + baseClassName + "]";
+            logMessage = logMessage + "[" + formatClassName(issuingClassName) + "]";
+        logMessage = logMessage + " " + messageBody;
+
+        logService.log(level.getValue(),logMessage);
         /*
         MsgEvent toSend = new MsgEvent(MsgEvent.Type.LOG, region, null, null, logMessage);
         toSend.setParam("src_region", region);
@@ -123,8 +115,16 @@ public class CLogger {
         */
     }
 
-    public void log(MsgEvent logMessage) {
-        //msgOutQueue.offer(logMessage);
+    private String formatClassName(String className) {
+        String newName = "";
+        int lastIndex = 0;
+        int nextIndex = className.indexOf(".", lastIndex + 1);
+        while (nextIndex != -1) {
+            newName = newName + className.substring(lastIndex, lastIndex + 1) + ".";
+            lastIndex = nextIndex + 1;
+            nextIndex = className.indexOf(".", lastIndex + 1);
+        }
+        return newName + className.substring(lastIndex);
     }
 
     public Level getLogLevel() {
