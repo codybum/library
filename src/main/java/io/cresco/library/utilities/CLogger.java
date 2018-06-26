@@ -91,7 +91,15 @@ public class CLogger {
     public void log(String messageBody, Level level) {
 
         //String className = log.getParam("full_class");
-        String logMessage = "[" + pluginBuilder.getPluginID() + ": " + baseClassName + "]";
+
+        String source = null;
+        if(pluginBuilder.getPluginID() != null) {
+            source = pluginBuilder.getPluginID();
+        } else {
+            source = "agent";
+        }
+
+        String logMessage = "[" + source + ": " + baseClassName + "]";
             logMessage = logMessage + "[" + formatClassName(issuingClassName) + "]";
         logMessage = logMessage + " " + messageBody;
 

@@ -12,13 +12,38 @@ import java.util.Map;
 
 public class PluginBuilder {
 
-    private AgentService agentService;
+    private AgentService agentService = null;
     private LogService logService;
     private Config config;
     private CrescoMeterRegistry crescoMeterRegistry;
     private String baseClassName;
 
     public PluginBuilder(String className, BundleContext context, Map<String,Object> configMap) {
+
+        this(null,className,context,configMap);
+    }
+
+
+    public PluginBuilder(AgentService agentService, String className, BundleContext context, Map<String,Object> configMap) {
+
+        if(agentService == null) {
+            //init agent services
+            ServiceReference sr = context.getServiceReference(AgentService.class.getName());
+            if (sr != null) {
+                boolean assign = sr.isAssignableTo(context.getBundle(), AgentService.class.getName());
+
+                if (assign) {
+                    agentService = (AgentService) context.getService(sr);
+                } else {
+                    System.out.println("Could not assign AgentService!");
+                }
+            } else {
+                System.out.println("Can't Find :" + AgentService.class.getName());
+            }
+        } else {
+            this.agentService = agentService;
+        }
+
 
         this.baseClassName = className.substring(0,className.lastIndexOf("."));
 
@@ -35,20 +60,6 @@ public class PluginBuilder {
                 .tags("region", "test") // optional
                 .register(crescoMeterRegistry);
         */
-
-        //init agent services
-        ServiceReference sr = context.getServiceReference(AgentService.class.getName());
-        if(sr != null) {
-            boolean assign = sr.isAssignableTo(context.getBundle(), AgentService.class.getName());
-
-            if (assign) {
-                agentService = (AgentService) context.getService(sr);
-            } else {
-                System.out.println("Could not assign AgentService!");
-            }
-        } else {
-            System.out.println("Can't Find :" + AgentService.class.getName());
-        }
 
         //init log service
 
@@ -85,5 +96,6 @@ public class PluginBuilder {
     public CLogger getLogger(String issuingClassName, CLogger.Level level) {
         return new CLogger(this,baseClassName,issuingClassName,level);
     }
+    public boolean isIPv6() { return false; }
 
 }
