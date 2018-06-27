@@ -12,8 +12,8 @@ public class AgentState implements Serializable {
     private static final long serialVersionUID = 5117254163782139591L;
 
 
-    public String getRegion() { return agentStateEngine.getRegion();};
-    public String getAgent() { return agentStateEngine.getAgent();}
+    public String getRegion() { return controllerState.getRegion();};
+    public String getAgent() { return controllerState.getAgent();}
 
     //public String getRegion() { return "agent";};
     //public String getAgent() { return "region";}
@@ -26,10 +26,10 @@ public class AgentState implements Serializable {
     boolean finished;
 
 
-    private AgentStateEngine agentStateEngine;
+    private ControllerState controllerState;
 
-    public AgentState(AgentStateEngine agentStateEngine) {
-        this.agentStateEngine = agentStateEngine;
+    public AgentState(ControllerState controllerState) {
+        this.controllerState = controllerState;
     }
 
     /*

@@ -2,7 +2,7 @@ package io.cresco.library.agent;
 
 
 
-public class AgentStateEngine {
+public class ControllerState {
 
 	private Mode currentMode  = Mode.PRE_INIT;
 	private String localRegion;
@@ -13,7 +13,7 @@ public class AgentStateEngine {
 	private String regionalAgent;
 	private String regionalRegion;
 
-	public AgentStateEngine() {
+	public ControllerState() {
 		setPreInit();
 	}
 
@@ -24,6 +24,12 @@ public class AgentStateEngine {
 			return false;
 		}
 	}
+
+	/*
+	public void setAgent(String agentName) { this.localAgent = agentName; }
+
+	public void setRegion(String regionName) { this.localRegion = regionName; }
+	*/
 
 	public String getControllerState() {
 		return currentMode.toString();
@@ -87,8 +93,6 @@ public class AgentStateEngine {
 		}
 	}
 
-	//private String agentpath;
-
 	public String getAgentPath() {
 		return localRegion + "_" + localAgent;
 	}
@@ -113,9 +117,11 @@ public class AgentStateEngine {
 		this.regionalAgent = regionalAgent;
 	}
 
-	public void setAgentInit(String desc) {
+	public void setAgentInit(String regionName, String agentName, String desc) {
 		currentMode = Mode.AGENT_INIT;
 		currentDesc = desc;
+		this.localAgent = agentName;
+		this.localRegion = regionName;
 		regionalRegion = null;
 		regionalAgent = null;
 		globalAgent = null;
@@ -123,9 +129,11 @@ public class AgentStateEngine {
 
 	}
 
-	public void setRegionInit(String desc) {
+	public void setRegionInit(String regionName, String agentName, String desc) {
 		currentMode = Mode.REGION_INIT;
 		currentDesc = desc;
+		localRegion = regionName;
+		localAgent = agentName;
 		regionalRegion = null;
 		regionalAgent = null;
 		globalAgent = null;

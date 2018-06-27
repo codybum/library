@@ -42,7 +42,7 @@ public class Config {
         try {
 
             if(configMap.containsKey(param)) {
-                return (Boolean)configMap.get(param);
+                return Boolean.parseBoolean((String)configMap.get(param));
             } else {
                 return null;
             }
@@ -73,7 +73,7 @@ public class Config {
         } catch (NumberFormatException nfe) {
             try {
                 if(configMap.containsKey(param)) {
-                    return (Double) configMap.get(param);
+                    return Double.parseDouble((String) configMap.get(param));
                 } else {
                     return null;
                 }
@@ -106,7 +106,7 @@ public class Config {
         } catch (NumberFormatException nfe) {
             try {
                 if(configMap.containsKey(param)) {
-                    return (Integer) configMap.get(param);
+                    return Integer.parseInt((String) configMap.get(param));
                 } else {
                     return null;
                 }
@@ -139,7 +139,7 @@ public class Config {
         } catch (NumberFormatException nfe) {
             try {
                 if(configMap.containsKey(param)) {
-                    return (Long)configMap.get(param);
+                    return Long.parseLong((String)(configMap.get(param)));
                 } else {
                     return null;
                 }
