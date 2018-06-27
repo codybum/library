@@ -178,7 +178,7 @@
                     <Bundle-Name>Cresco Library</Bundle-Name>
                     <Bundle-Description>Library for Cresco</Bundle-Description>
                     <Bundle-Vendor>Cresco.io</Bundle-Vendor>
-                    <Bundle-Version>1.0.0</Bundle-Version>
+                    <Bundle-Version>${project.version}-${maven.build.timestamp}</Bundle-Version>
                     <Import-Package>*;resolution:=optional</Import-Package>
                     <Embed-Dependency>!org.osgi.*;*</Embed-Dependency>
                     <Export-Package>
