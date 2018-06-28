@@ -13,6 +13,7 @@ public class ControllerState {
 	private String regionalAgent;
 	private String regionalRegion;
 
+
 	public ControllerState() {
 		setPreInit();
 	}

@@ -20,14 +20,54 @@ public class MsgEvent {
         CONFIG, DISCOVER, ERROR, EXEC, GC, INFO, KPI, LOG, WATCHDOG
     }
 
+    //headers
     private Type msgType;
+    private String src_region = null;
+    private String src_agent = null;
+    private String src_plugin = null;
+    private String dst_region = null;
+    private String dst_agent = null;
+    private String dst_plugin = null;
+    private boolean isRegional = false;
+    private boolean isGlobal = false;
+
     private String msgRegion;
     private String msgAgent;
     private String msgPlugin;
     private Map<String, String> params;
 
+
+
+
     public MsgEvent() {
 
+    }
+
+    public MsgEvent(Type msgType, String src_region, String src_agent, String src_plugin, String dst_region, String dst_agent, String dst_plugin, boolean isRegional, boolean isGlobal) {
+        //create header
+        this.msgType = msgType;
+        this.src_region = src_region;
+        this.src_agent = src_agent;
+        this.src_plugin = src_plugin;
+        this.dst_region = dst_region;
+        this.dst_agent = dst_agent;
+        this.dst_plugin = dst_plugin;
+        this.isRegional = isRegional;
+        this.isGlobal = isGlobal;
+
+        //create extra params
+        this.params = new HashMap<String, String>();
+        //adding params for backward compatability
+        this.params.put("src_region", src_region);
+        this.params.put("src_agent", src_agent);
+        if(src_plugin != null) {
+            this.params.put("src_plugin", src_plugin);
+        }
+        this.params.put("dst_region",dst_region);
+        this.params.put("dst_agent",dst_agent);
+        if(dst_plugin != null) {
+            this.params.put("dst_plugin", dst_plugin);
+        }
     }
 
     public MsgEvent(Type msgType, String msgRegion, String msgAgent, String msgPlugin, String msgBody) {

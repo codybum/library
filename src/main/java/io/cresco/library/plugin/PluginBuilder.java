@@ -89,8 +89,7 @@ public class PluginBuilder {
     public String getAgent() { return agentService.getAgentState().getAgent(); }
     public String getRegion() { return agentService.getAgentState().getRegion(); }
     public String getPluginID() { return config.getStringParam("pluginID"); }
-    public void msgIn(MsgEvent msg) { agentService.getAgentState().msgIn(msg); }
-    public void msgIn(String msg) { agentService.msgIn(getPluginID(), msg); }
+    public void msgIn(MsgEvent msg) { agentService.msgIn(getPluginID(), msg); }
     public CrescoMeterRegistry getCrescoMeterRegistry() { return crescoMeterRegistry; }
 
     public CLogger getLogger(String issuingClassName, CLogger.Level level) {
@@ -102,7 +101,24 @@ public class PluginBuilder {
         //return this.rpc.call(msg);
         return msg;
     }
-    public void sendMsgEvent(MsgEvent msg) {
-        //this.msgOutQueue.add(msg);
+
+    public MsgEvent getAgentMsgEvent(MsgEvent.Type type) {
+        return getAgentMsgEvent(type,false,false);
     }
+
+    public MsgEvent getAgentMsgEvent(MsgEvent.Type type, boolean isRegional, boolean isGlobal) {
+
+        MsgEvent msg = null;
+        try {
+            msg = new MsgEvent(type, getRegion(),getAgent(),getPluginID(),getRegion(),getAgent(),null,isRegional ,isGlobal);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return msg;
+    }
+
+    public void sendMsgEvent(MsgEvent msg) {
+        System.out.println("PLUGIN SEND MSGEVENT !");
+    }
+
 }

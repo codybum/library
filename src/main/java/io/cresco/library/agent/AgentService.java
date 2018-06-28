@@ -1,7 +1,9 @@
 package io.cresco.library.agent;
 
 
+import io.cresco.library.messaging.MsgEvent;
+
 public interface AgentService {
 	AgentState getAgentState();
-	void msgIn(String id, String msg);
+	void msgIn(String id, MsgEvent msg);
 }
