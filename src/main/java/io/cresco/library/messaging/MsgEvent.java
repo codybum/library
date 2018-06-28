@@ -49,9 +49,11 @@ public class MsgEvent {
         this.src_region = src_region;
         this.src_agent = src_agent;
         this.src_plugin = src_plugin;
+
         this.dst_region = dst_region;
         this.dst_agent = dst_agent;
         this.dst_plugin = dst_plugin;
+
         this.isRegional = isRegional;
         this.isGlobal = isGlobal;
 

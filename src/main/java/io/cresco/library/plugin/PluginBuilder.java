@@ -102,15 +102,44 @@ public class PluginBuilder {
         return msg;
     }
 
-    public MsgEvent getAgentMsgEvent(MsgEvent.Type type) {
-        return getAgentMsgEvent(type,false,false);
+
+    public MsgEvent getGlobalControllerMsgEvent(MsgEvent.Type type) {
+        return getMsgEvent(type, getRegion(),getAgent(), null,true,true);
     }
 
-    public MsgEvent getAgentMsgEvent(MsgEvent.Type type, boolean isRegional, boolean isGlobal) {
+    public MsgEvent getGlobalAgentMsgEvent(MsgEvent.Type type, String dstRegion, String dstAgent) {
+        return getMsgEvent(type, dstRegion,dstAgent, null,false,false);
+    }
+
+    public MsgEvent getGlobalPluginMsgEvent(MsgEvent.Type type, String dstRegion, String dstAgent, String dstPlugin) {
+        return getMsgEvent(type, dstRegion,dstAgent, dstPlugin,false,false);
+    }
+
+    public MsgEvent getRegionalControllerMsgEvent(MsgEvent.Type type) {
+        return getMsgEvent(type,getRegion(), getAgent(), null,true,false);
+    }
+
+    public MsgEvent getRegionalAgentMsgEvent(MsgEvent.Type type, String dstAgent) {
+        return getMsgEvent(type,getRegion(), dstAgent, null,false,false);
+    }
+
+    public MsgEvent getRegionalPluginMsgEvent(MsgEvent.Type type, String dstAgent, String dstPlugin) {
+        return getMsgEvent(type,getRegion(), dstAgent, dstPlugin,false,false);
+    }
+
+    public MsgEvent getAgentMsgEvent(MsgEvent.Type type) {
+        return getMsgEvent(type,getRegion(), getAgent(), null,false,false);
+    }
+
+    public MsgEvent getPluginMsgEvent(MsgEvent.Type type, String dstPlugin) {
+        return getMsgEvent(type,getRegion(),getAgent(),dstPlugin,false,false);
+    }
+
+    private MsgEvent getMsgEvent(MsgEvent.Type type, String dstRegion, String dstAgent, String dstPlugin, boolean isRegional, boolean isGlobal) {
 
         MsgEvent msg = null;
         try {
-            msg = new MsgEvent(type, getRegion(),getAgent(),getPluginID(),getRegion(),getAgent(),null,isRegional ,isGlobal);
+            msg = new MsgEvent(type, getRegion(),getAgent(),getPluginID(),dstRegion,dstAgent,dstPlugin,isRegional ,isGlobal);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
