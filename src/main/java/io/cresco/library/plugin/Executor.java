@@ -4,6 +4,7 @@ package io.cresco.library.plugin;
 import io.cresco.library.messaging.MsgEvent;
 
 public interface Executor {
+
 	MsgEvent executeCONFIG(MsgEvent incoming);
 	MsgEvent executeDISCOVER(MsgEvent incoming);
 	MsgEvent executeERROR(MsgEvent incoming);
