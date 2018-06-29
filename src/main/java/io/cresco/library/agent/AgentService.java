@@ -5,5 +5,5 @@ import io.cresco.library.messaging.MsgEvent;
 
 public interface AgentService {
 	AgentState getAgentState();
-	void msgIn(String id, MsgEvent msg);
+	void msgOut(String id, MsgEvent msg);
 }

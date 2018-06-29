@@ -17,14 +17,13 @@ public class PluginBuilder {
     private Config config;
     private CrescoMeterRegistry crescoMeterRegistry;
     private String baseClassName;
+    private Executor executor;
 
     public PluginBuilder(String className, BundleContext context, Map<String,Object> configMap) {
-
         this(null,className,context,configMap);
     }
 
-
-    public PluginBuilder(AgentService agentService, String className, BundleContext context, Map<String,Object> configMap) {
+    public PluginBuilder(AgentService agentService,String className, BundleContext context, Map<String,Object> configMap) {
 
         if(agentService == null) {
             //init agent services
@@ -89,7 +88,13 @@ public class PluginBuilder {
     public String getAgent() { return agentService.getAgentState().getAgent(); }
     public String getRegion() { return agentService.getAgentState().getRegion(); }
     public String getPluginID() { return config.getStringParam("pluginID"); }
-    public void msgIn(MsgEvent msg) { agentService.msgIn(getPluginID(), msg); }
+
+    public void msgIn(MsgEvent message) {
+        if ((message == null) || (executor == null)) return;
+        new Thread(new MessageProcessor(message)).start();
+    }
+
+    public void msgOut(MsgEvent msg) { agentService.msgOut(getPluginID(), msg); }
     public CrescoMeterRegistry getCrescoMeterRegistry() { return crescoMeterRegistry; }
 
     public CLogger getLogger(String issuingClassName, CLogger.Level level) {
@@ -146,8 +151,82 @@ public class PluginBuilder {
         return msg;
     }
 
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
+    }
+
     public void sendMsgEvent(MsgEvent msg) {
         System.out.println("PLUGIN SEND MSGEVENT !");
     }
+
+    protected class MessageProcessor implements Runnable {
+        /** Incoming MsgEvent object */
+        private MsgEvent msg;
+        /** MessageProcessor Cresco Logger instance */
+        private final CLogger logger;
+
+        /**
+         * Constructor
+         * @param msg   MsgEvent to process
+         */
+        MessageProcessor(MsgEvent msg) {
+            this.msg = msg;
+            logger = getLogger(MessageProcessor.class.getName(), CLogger.Level.Info);
+        }
+
+        /**
+         * Processing method
+         */
+        @Override
+        public void run() {
+            try {
+
+                if(msg.dstIsLocal(getRegion(),getAgent(),getPluginID())) {
+
+                    MsgEvent retMsg = null;
+
+
+                    switch (msg.getMsgType().toString().toUpperCase()) {
+                        case "CONFIG":
+                            retMsg = executor.executeCONFIG(msg);
+                            break;
+                        case "DISCOVER":
+                            retMsg = executor.executeDISCOVER(msg);
+                            break;
+                        case "ERROR":
+                            retMsg = executor.executeERROR(msg);
+                            break;
+                        case "EXEC":
+                            retMsg = executor.executeEXEC(msg);
+                            break;
+                        case "INFO":
+                            retMsg = executor.executeINFO(msg);
+                            break;
+                        case "WATCHDOG":
+                            retMsg = executor.executeWATCHDOG(msg);
+                            break;
+                        case "KPI":
+                            retMsg = executor.executeKPI(msg);
+                            break;
+
+                        default:
+                            logger.error("UNKNOWN MESSAGE TYPE! " + msg.getParams());
+                            break;
+                    }
+
+
+                    if (retMsg != null && retMsg.getParams().keySet().contains("is_rpc")) {
+                        retMsg.setReturn();
+                        //msgOutQueue.add(retMsg);
+                        msgIn(retMsg);
+                    }
+                }
+
+            } catch (Exception e) {
+                logger.error("Message Execution Exception: {}", e.getMessage());
+            }
+        }
+    }
+
 
 }

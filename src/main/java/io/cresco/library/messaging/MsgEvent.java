@@ -98,6 +98,29 @@ public class MsgEvent {
         return isRegional;
     }
 
+    public boolean dstIsLocal(String localRegion, String localAgent, String localPlugin) {
+        boolean isLocal = false;
+
+        try {
+            if(dst_region.equals(localRegion) && dst_agent.equals(localAgent)) {
+
+                if((localPlugin == null) && (dst_plugin == null)) {
+                    isLocal = true;
+                } else if((localPlugin != null) && (dst_plugin != null)) {
+                    if(localPlugin.equals(dst_plugin)) {
+                        isLocal = true;
+                    }
+                }
+            }
+
+
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return isLocal;
+    }
+
     public void setSrc(String region, String agent, String plugin) {
         setParam("src_region", region);
         setParam("src_agent", agent);
