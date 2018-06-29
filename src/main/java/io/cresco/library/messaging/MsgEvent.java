@@ -90,6 +90,14 @@ public class MsgEvent {
         this.params = new HashMap<String, String>(params);
     }
 
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+    public boolean isRegional() {
+        return isRegional;
+    }
+
     public void setSrc(String region, String agent, String plugin) {
         setParam("src_region", region);
         setParam("src_agent", agent);
