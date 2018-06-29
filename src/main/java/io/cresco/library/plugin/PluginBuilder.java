@@ -18,6 +18,7 @@ public class PluginBuilder {
     private CrescoMeterRegistry crescoMeterRegistry;
     private String baseClassName;
     private Executor executor;
+    private boolean isActive;
 
     public PluginBuilder(String className, BundleContext context, Map<String,Object> configMap) {
         this(null,className,context,configMap);
@@ -107,7 +108,6 @@ public class PluginBuilder {
         return msg;
     }
 
-
     public MsgEvent getGlobalControllerMsgEvent(MsgEvent.Type type) {
         return getMsgEvent(type, getRegion(),getAgent(), null,true,true);
     }
@@ -154,6 +154,9 @@ public class PluginBuilder {
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
+
+    public boolean isActive() { return this.isActive; }
+    public void setIsActive(boolean isActive) { this.isActive = isActive; }
 
     public void sendMsgEvent(MsgEvent msg) {
         System.out.println("PLUGIN SEND MSGEVENT !");
