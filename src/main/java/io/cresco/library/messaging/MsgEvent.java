@@ -31,9 +31,6 @@ public class MsgEvent {
     private boolean isRegional = false;
     private boolean isGlobal = false;
 
-    private String msgRegion;
-    private String msgAgent;
-    private String msgPlugin;
     private Map<String, String> params;
 
 
@@ -74,18 +71,18 @@ public class MsgEvent {
 
     public MsgEvent(Type msgType, String msgRegion, String msgAgent, String msgPlugin, String msgBody) {
         this.msgType = msgType;
-        this.msgRegion = msgRegion;
-        this.msgAgent = msgAgent;
-        this.msgPlugin = msgPlugin;
+        //this.msgRegion = msgRegion;
+        //this.msgAgent = msgAgent;
+        //this.msgPlugin = msgPlugin;
         this.params = new HashMap<String, String>();
         params.put("msg", msgBody);
     }
 
     public MsgEvent(Type msgType, String msgRegion, String msgAgent, String msgPlugin, Map<String, String> params) {
         this.msgType = msgType;
-        this.msgRegion = msgRegion;
-        this.msgAgent = msgAgent;
-        this.msgPlugin = msgPlugin;
+        //this.msgRegion = msgRegion;
+        //this.msgAgent = msgAgent;
+        //this.msgPlugin = msgPlugin;
         this.params = params;
         this.params = new HashMap<String, String>(params);
     }
@@ -96,6 +93,30 @@ public class MsgEvent {
 
     public boolean isRegional() {
         return isRegional;
+    }
+
+    public String getSrcPlugin() {
+        return src_plugin;
+    }
+
+    public String getSrcRegion() {
+        return src_region;
+    }
+
+    public String getSrcAgent() {
+        return src_agent;
+    }
+
+    public String getDstRegion() {
+        return dst_region;
+    }
+
+    public String getDstAgent() {
+        return dst_agent;
+    }
+
+    public String getDstPlugin() {
+        return dst_plugin;
     }
 
     public boolean dstIsLocal(String localRegion, String localAgent, String localPlugin) {
@@ -157,19 +178,17 @@ public class MsgEvent {
         } else {
             removeParam("dst_region");
         }
-        setMsgRegion(src_region);
         if (src_agent != null) {
             setParam("dst_agent", src_agent);
         } else {
             removeParam("dst_agent");
         }
-        setMsgAgent(src_agent);
         if (src_plugin != null) {
             setParam("dst_plugin", src_plugin);
         } else {
             removeParam("dst_plugin");
         }
-        setMsgPlugin(src_plugin);
+
     }
 
     public String getMsgBody() {
@@ -189,29 +208,6 @@ public class MsgEvent {
         this.msgType = msgType;
     }
 
-    public String getMsgRegion() {
-        return msgRegion;
-    }
-
-    public void setMsgRegion(String msgRegion) {
-        this.msgRegion = msgRegion;
-    }
-
-    public String getMsgAgent() {
-        return msgAgent;
-    }
-
-    public void setMsgAgent(String msgAgent) {
-        this.msgAgent = msgAgent;
-    }
-
-    public String getMsgPlugin() {
-        return msgPlugin;
-    }
-
-    public void setMsgPlugin(String msgPlugin) {
-        this.msgPlugin = msgPlugin;
-    }
 
     @XmlJavaTypeAdapter(MsgEventParamsAdapter.class)
     public Map<String, String> getParams() {
