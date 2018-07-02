@@ -21,7 +21,7 @@ public class AgentState implements Serializable {
     //public String getAgent() { return "region";}
 
 
-    String id;
+    String agentID;
     String title;
     String description;
     Date dueDate;
@@ -30,7 +30,8 @@ public class AgentState implements Serializable {
 
     private ControllerState controllerState;
 
-    public AgentState(ControllerState controllerState) {
+    public AgentState(String agentID, ControllerState controllerState) {
+        this.agentID = agentID;
         this.controllerState = controllerState;
     }
 
@@ -40,15 +41,12 @@ public class AgentState implements Serializable {
     }
     */
 
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
+    public String getAgentID() {
+        return agentID;
     }
 
     public void sendMessage(String message) {
-        System.out.println("Message From Agent:" + id + " remote_id:" + message);
+        System.out.println("Message From Agent:" + agentID + " remote_id:" + message);
     }
 
     public void msgIn(String msg) {
