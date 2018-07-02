@@ -20,13 +20,40 @@ public class PluginBuilder {
     private String baseClassName;
     private Executor executor;
     private boolean isActive;
-    private CLogger logger;
 
     public PluginBuilder(String className, BundleContext context, Map<String,Object> configMap) {
         this(null,className,context,configMap);
     }
 
     public PluginBuilder(AgentService agentService,String className, BundleContext context, Map<String,Object> configMap) {
+
+
+        if(agentService == null) {
+            //init agent services
+            ServiceReference sr = context.getServiceReference(AgentService.class.getName());
+            if (sr != null) {
+                boolean assign = sr.isAssignableTo(context.getBundle(), AgentService.class.getName());
+
+                if (assign) {
+                    this.agentService = (AgentService) context.getService(sr);
+                } else {
+                    System.out.println("Could not assign AgentService!");
+                }
+            } else {
+                System.out.println("Can't Find :" + AgentService.class.getName());
+            }
+        } else {
+            this.agentService = agentService;
+        }
+
+        this.baseClassName = className.substring(0,className.lastIndexOf("."));
+
+        //create config
+        config = new Config(configMap);
+
+        //metric registery
+        crescoMeterRegistry = new CrescoMeterRegistry(getPluginID());
+
 
         ServiceReference ref = context.getServiceReference(LogService.class.getName());
         if (ref != null)
@@ -40,52 +67,9 @@ public class PluginBuilder {
         } else {
             System.out.println("Can't Find :" + LogService.class.getName());
         }
-        logger = getLogger(PluginBuilder.class.getName(),CLogger.Level.Info);
 
 
-        if(agentService == null) {
-            if(setAgentService(context,configMap)) {
-                logger.error("Could not set agentService!");
-            }
-        } else {
-        this.agentService = agentService;
-        }
 
-
-        this.baseClassName = className.substring(0,className.lastIndexOf("."));
-
-        //create config
-        config = new Config(configMap);
-
-        //metric registery
-        crescoMeterRegistry = new CrescoMeterRegistry(getPluginID());
-
-        //init log service
-
-    }
-
-    public boolean setAgentService(BundleContext context, Map<String,Object> configMap) {
-        try {
-
-            //init agent services
-            String agentID = (String)configMap.get("agentID");
-
-            String filterString = "(agentID=" + agentID + ")";
-
-            ServiceReference[] servRefs = context.getServiceReferences(AgentService.class.getName(), filterString);
-
-            for(ServiceReference sr : servRefs) {
-
-                if(sr.isAssignableTo(context.getBundle(), AgentService.class.getName())) {
-                    this.agentService = (AgentService) context.getService(sr);
-                    return true;
-                }
-            }
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return false;
     }
 
     public AgentService getAgentService() {

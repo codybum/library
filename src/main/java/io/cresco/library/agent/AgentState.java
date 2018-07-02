@@ -17,36 +17,16 @@ public class AgentState implements Serializable {
     public boolean isActive() { return controllerState.isActive(); }
 
 
-    //public String getRegion() { return "agent";};
-    //public String getAgent() { return "region";}
-
-
-    String agentID;
-    String title;
-    String description;
-    Date dueDate;
-    boolean finished;
-
-
     private ControllerState controllerState;
 
-    public AgentState(String agentID, ControllerState controllerState) {
-        this.agentID = agentID;
+    public AgentState(ControllerState controllerState) {
         this.controllerState = controllerState;
     }
 
-    /*
-    public void setAgentStateEngine(AgentStateEngine agentStateEngine) {
-        this.agentStateEngine = agentStateEngine;
-    }
-    */
 
-    public String getAgentID() {
-        return agentID;
-    }
 
     public void sendMessage(String message) {
-        System.out.println("Message From Agent:" + agentID + " remote_id:" + message);
+        System.out.println("Message From Agent: remote_id:" + message);
     }
 
     public void msgIn(String msg) {
