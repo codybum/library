@@ -110,7 +110,11 @@ public class PluginBuilder {
         rpc.putReturnMessage(callId, msg);
     }
 
-    public void msgOut(MsgEvent msg) { agentService.msgOut(getPluginID(), msg); }
+    public void msgOut(MsgEvent msg) {
+
+        agentService.msgOut(getPluginID(), msg);
+
+    }
     public CrescoMeterRegistry getCrescoMeterRegistry() { return crescoMeterRegistry; }
 
     public CLogger getLogger(String issuingClassName, CLogger.Level level) {
@@ -235,7 +239,17 @@ public class PluginBuilder {
 
                     if ((retMsg != null) && (retMsg.getParams().keySet().contains("is_rpc"))) {
                         retMsg.setReturn();
-                        msgOut(retMsg);
+
+                        //pick up self-rpc
+                        String callId = retMsg.getParam(("callId-" + getRegion() + "-" +
+                                getAgent() + "-" + getPluginID()));
+                        if (callId != null) {
+                            receiveRPC(callId, retMsg);
+                        } else {
+                            msgOut(retMsg);
+                        }
+
+
                     }
                 }
 
