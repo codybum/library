@@ -2,6 +2,7 @@ package io.cresco.library.plugin;
 
 import io.cresco.library.agent.AgentService;
 import io.cresco.library.messaging.MsgEvent;
+import io.cresco.library.messaging.RPC;
 import io.cresco.library.metrics.CrescoMeterRegistry;
 import io.cresco.library.utilities.CLogger;
 import org.osgi.framework.BundleContext;
@@ -20,6 +21,7 @@ public class PluginBuilder {
     private String baseClassName;
     private Executor executor;
     private boolean isActive;
+    private RPC rpc;
 
     public PluginBuilder(String className, BundleContext context, Map<String,Object> configMap) {
         this(null,className,context,configMap);
@@ -27,6 +29,7 @@ public class PluginBuilder {
 
     public PluginBuilder(AgentService agentService,String className, BundleContext context, Map<String,Object> configMap) {
 
+        String identString = null;
 
         if(agentService == null) {
             //init agent services
@@ -43,6 +46,7 @@ public class PluginBuilder {
                 System.out.println("Can't Find :" + AgentService.class.getName());
             }
         } else {
+            identString = "agent";
             this.agentService = agentService;
         }
 
@@ -52,8 +56,10 @@ public class PluginBuilder {
         config = new Config(configMap);
 
         //metric registery
-        crescoMeterRegistry = new CrescoMeterRegistry(getPluginID());
-
+        if(identString == null) {
+            identString = getPluginID();
+        }
+        this.crescoMeterRegistry = new CrescoMeterRegistry(identString);
 
         ServiceReference ref = context.getServiceReference(LogService.class.getName());
         if (ref != null)
@@ -68,7 +74,7 @@ public class PluginBuilder {
             System.out.println("Can't Find :" + LogService.class.getName());
         }
 
-
+        this.rpc = new RPC(this);
 
     }
 
@@ -86,8 +92,22 @@ public class PluginBuilder {
     public String getPluginID() { return config.getStringParam("pluginID"); }
 
     public void msgIn(MsgEvent message) {
-        if ((message == null) || (executor == null)) return;
-        new Thread(new MessageProcessor(message)).start();
+        if (message != null) {
+
+            String callId = message.getParam(("callId-" + this.getRegion() + "-" +
+                    this.getAgent() + "-" + this.getPluginID()));
+            if (callId != null) {
+                this.receiveRPC(callId, message);
+            } else {
+                if(executor != null) {
+                    new Thread(new MessageProcessor(message)).start();
+                }
+            }
+        }
+    }
+
+    public void receiveRPC(String callId, MsgEvent msg) {
+        rpc.putReturnMessage(callId, msg);
     }
 
     public void msgOut(MsgEvent msg) { agentService.msgOut(getPluginID(), msg); }
@@ -97,10 +117,10 @@ public class PluginBuilder {
         return new CLogger(this,baseClassName,issuingClassName,level);
     }
     public boolean isIPv6() { return false; }
+
     public MsgEvent sendRPC(MsgEvent msg) {
-        //msg.setParam("is_rpc", "true");
-        //return this.rpc.call(msg);
-        return msg;
+        msg.setParam("is_rpc",Boolean.TRUE.toString());
+        return this.rpc.call(msg);
     }
 
     public MsgEvent getGlobalControllerMsgEvent(MsgEvent.Type type) {
@@ -213,10 +233,9 @@ public class PluginBuilder {
                     }
 
 
-                    if (retMsg != null && retMsg.getParams().keySet().contains("is_rpc")) {
+                    if ((retMsg != null) && (retMsg.getParams().keySet().contains("is_rpc"))) {
                         retMsg.setReturn();
-                        //msgOutQueue.add(retMsg);
-                        msgIn(retMsg);
+                        msgOut(retMsg);
                     }
                 }
 

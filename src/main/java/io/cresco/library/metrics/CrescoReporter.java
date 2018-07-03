@@ -39,7 +39,7 @@ public class CrescoReporter implements Reporter, Closeable {
         private TimeUnit durationUnit;
         private ObjectNameFactory objectNameFactory;
         private MetricFilter filter = MetricFilter.ALL;
-        private String domain;
+        private String domain = "metrics";
         private Map<String, TimeUnit> specificDurationUnits;
         private Map<String, TimeUnit> specificRateUnits;
 

@@ -154,7 +154,39 @@ public class MsgEvent {
         setParam("dst_plugin", plugin);
     }
 
+
     public void setReturn() {
+
+        String src_region_tmp = src_region;
+        String src_agent_tmp = src_agent;
+        String src_plugin_tmp = src_plugin;
+
+        src_region = null;
+        src_agent = null;
+        src_plugin = null;
+
+        src_region = dst_region;
+        src_agent = dst_agent;
+        if(dst_plugin != null) {
+            src_plugin = dst_plugin;
+        }
+
+        dst_region = src_region_tmp;
+        dst_agent = src_agent_tmp;
+        dst_plugin = src_plugin_tmp;
+
+        //todo remove in the future
+        setReturnParams();
+    }
+
+    public String printHeader() {
+
+        return "type:" + msgType.toString() + " src_region:" + src_region + " src_agent:" + src_agent +
+                " src_plugin:" + src_plugin + " dst_region:" + dst_region + " dst_agent:" +dst_agent +
+                " dst_plugin:" + dst_plugin;
+    }
+
+    public void setReturnParams() {
         String src_region = getParam("src_region");
         String src_agent = getParam("src_agent");
         String src_plugin = getParam("src_plugin");
