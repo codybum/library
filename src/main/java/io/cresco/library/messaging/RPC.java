@@ -45,7 +45,6 @@ public class RPC {
         try {
             String callId = java.util.UUID.randomUUID().toString();
             msg.setParam("callId-" + plugin.getRegion() + "-" + plugin.getAgent() + "-" + plugin.getPluginID(), callId);
-            System.out.println("SEND RPC " + msg.getParams());
             plugin.msgOut(msg);
 
             int count = 0;
