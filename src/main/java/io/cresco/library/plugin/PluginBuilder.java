@@ -11,6 +11,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PluginBuilder {
 
@@ -22,12 +24,15 @@ public class PluginBuilder {
     private Executor executor;
     private boolean isActive;
     private RPC rpc;
+    private ExecutorService msgInProcessQueue;
 
     public PluginBuilder(String className, BundleContext context, Map<String,Object> configMap) {
         this(null,className,context,configMap);
     }
 
     public PluginBuilder(AgentService agentService,String className, BundleContext context, Map<String,Object> configMap) {
+
+        this.msgInProcessQueue = Executors.newCachedThreadPool();
 
         String identString = null;
 
@@ -100,7 +105,8 @@ public class PluginBuilder {
                 this.receiveRPC(callId, message);
             } else {
                 if(executor != null) {
-                    new Thread(new MessageProcessor(message)).start();
+                    //new Thread(new MessageProcessor(message)).start();
+                    msgInProcessQueue.submit(new MessageProcessor(message));
                 }
             }
         }
