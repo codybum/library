@@ -64,7 +64,8 @@ public class PluginBuilder {
         if(identString == null) {
             identString = getPluginID();
         }
-        this.crescoMeterRegistry = new CrescoMeterRegistry(identString);
+
+        this.crescoMeterRegistry = new CrescoMeterRegistry(this,identString);
 
         ServiceReference ref = context.getServiceReference(LogService.class.getName());
         if (ref != null)
@@ -74,6 +75,7 @@ public class PluginBuilder {
                 logService = (LogService) context.getService(ref);
             } else {
                 System.out.println("Could not assign LogService!");
+                
             }
         } else {
             System.out.println("Can't Find :" + LogService.class.getName());
@@ -107,6 +109,9 @@ public class PluginBuilder {
                 if(executor != null) {
                     //new Thread(new MessageProcessor(message)).start();
                     msgInProcessQueue.submit(new MessageProcessor(message));
+
+
+
                 }
             }
         }

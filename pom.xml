@@ -46,24 +46,30 @@
         <version>${gson.version}</version>
     </dependency>
 
+    <!--
     <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <version>${commons.version}</version>
     </dependency>
 
+-->
+    <!--
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
     </dependency>
+
+
     <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.7.25</version>
         <scope>test</scope>
     </dependency>
+
     <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
@@ -71,31 +77,49 @@
         <scope>test</scope>
     </dependency>
 
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.11.0</version>
+
+    </dependency>
+    -->
+
     <!-- ActiveMQ -->
 
 
     <!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-all -->
-
+<!--
     <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-all</artifactId>
         <version>${activemq.version}</version>
-    </dependency>
 
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
+    </dependency>
+-->
+
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+    <!--
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.11.0</version>
+
+    </dependency>
+-->
+<!--
     <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
         <version>2.5.0</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
     <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
         <version>3.6</version>
     </dependency>
-
+-->
 
     <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
     <dependency>
@@ -132,18 +156,19 @@
     </dependency>
 -->
 
+    <!--
     <dependency>
         <groupId>com.googlecode.concurrentlinkedhashmap</groupId>
         <artifactId>concurrentlinkedhashmap-lru</artifactId>
         <version>1.4.2</version>
     </dependency>
-
+-->
 
     <!-- OrientDB -->
 
     <!-- Embedded: 1. core 2. graphdb -->
     <!-- Stand Alone: 1. graphdb 2. core -->
-
+<!--
     <dependency>
         <groupId>com.orientechnologies</groupId>
         <artifactId>orientdb-core</artifactId>
@@ -157,7 +182,7 @@
         <version>${orientdb.version}</version>
         <scope>provided</scope>
     </dependency>
-
+-->
 
 
 </dependencies>
@@ -190,21 +215,27 @@
                     <Import-Package>*;resolution:=optional</Import-Package>
                     <Embed-Dependency>!org.osgi.*;*</Embed-Dependency>
                     <Export-Package>
-                        io.cresco.library.*;
-                        com.google.*;
-                        com.googlecode.concurrentlinkedhashmap.*;
-                        com.orientechnologies.*;
-                        com.tinkerpop.*;
-                        com.sun.jna.*;
-                        javax.*;
-                        org.apache.*;
+                        <!--
                         org.springframework.*;
                         org.fusesource.*;
-                        io.micrometer.*;
-                        com.codahale.*;
+                        com.orientechnologies.*;
+                        com.tinkerpop.*;
+                        javax.*;
                         org.slf4j.*;
+                        com.google.*;
+                        com.googlecode.concurrentlinkedhashmap.*;
+                        com.sun.jna.*;
+                        org.apache.*;
+                        com.codahale.*;
+                        org.apache.commons.configuration.*;
+                        -->
+                        com.google.common.*;
+                        com.codahale.metrics.*;
                         org.LatencyUtils;
-                        org.osgi.service.log.*
+                        io.micrometer.*;
+                        org.osgi.service.log.*;
+                        com.google.gson.*;
+                        io.cresco.library.*
                     </Export-Package>
                     <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                 </instructions>

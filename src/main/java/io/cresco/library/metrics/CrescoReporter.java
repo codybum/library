@@ -2,8 +2,8 @@ package io.cresco.library.metrics;
 
 
 import com.codahale.metrics.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.cresco.library.plugin.PluginBuilder;
+import io.cresco.library.utilities.CLogger;
 
 import javax.management.*;
 import java.io.Closeable;
@@ -24,7 +24,12 @@ public class CrescoReporter implements Reporter, Closeable {
      * @param registry the registry to report
      * @return a {@link CrescoReporter.Builder} instance for a {@link CrescoReporter}
      */
-    public static CrescoReporter.Builder forRegistry(MetricRegistry registry) {
+    private static PluginBuilder plugin;
+    private static CLogger LOGGER;
+
+    public static CrescoReporter.Builder forRegistry(PluginBuilder pluginIn, MetricRegistry registry) {
+        plugin = pluginIn;
+        LOGGER = pluginIn.getLogger(CrescoReporter.class.getName(),CLogger.Level.Info);
         return new CrescoReporter.Builder(registry);
     }
 
@@ -147,7 +152,7 @@ public class CrescoReporter implements Reporter, Closeable {
         }
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CrescoReporter.class);
+    //private static final Logger LOGGER = LoggerFactory.getLogger(CrescoReporter.class);
 
     // CHECKSTYLE:OFF
     @SuppressWarnings("UnusedDeclaration")

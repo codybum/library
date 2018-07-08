@@ -18,6 +18,7 @@ package io.cresco.library.metrics;
  */
 
 import com.codahale.metrics.MetricRegistry;
+import io.cresco.library.plugin.PluginBuilder;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.dropwizard.DropwizardMeterRegistry;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
@@ -28,31 +29,31 @@ import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 public class CrescoMeterRegistry extends DropwizardMeterRegistry {
     private final CrescoReporter reporter;
 
-    public CrescoMeterRegistry(String instanceName) {
-        this(instanceName, CrescoConfig.DEFAULT,Clock.SYSTEM);
+    public CrescoMeterRegistry(PluginBuilder plugin,String instanceName) {
+        this(plugin, instanceName, CrescoConfig.DEFAULT,Clock.SYSTEM);
     }
 
-    public CrescoMeterRegistry(String instanceName, CrescoConfig config, Clock clock) {
-        this(instanceName,config, clock, HierarchicalNameMapper.DEFAULT);
+    public CrescoMeterRegistry(PluginBuilder plugin, String instanceName, CrescoConfig config, Clock clock) {
+        this(plugin,instanceName,config, clock, HierarchicalNameMapper.DEFAULT);
     }
 
-    public CrescoMeterRegistry(String instanceName, CrescoConfig config, Clock clock, HierarchicalNameMapper nameMapper) {
-        this(instanceName,config, clock, nameMapper, new MetricRegistry());
+    public CrescoMeterRegistry(PluginBuilder plugin, String instanceName, CrescoConfig config, Clock clock, HierarchicalNameMapper nameMapper) {
+        this(plugin,instanceName,config, clock, nameMapper, new MetricRegistry());
     }
 
-    public CrescoMeterRegistry(String instanceName, CrescoConfig config, Clock clock, HierarchicalNameMapper nameMapper, MetricRegistry metricRegistry) {
-        this(instanceName, config, clock, nameMapper, metricRegistry, defaultCrescoReporter(instanceName, config, metricRegistry));
+    public CrescoMeterRegistry(PluginBuilder plugin, String instanceName, CrescoConfig config, Clock clock, HierarchicalNameMapper nameMapper, MetricRegistry metricRegistry) {
+        this(plugin,instanceName, config, clock, nameMapper, metricRegistry, defaultCrescoReporter(plugin,instanceName, config, metricRegistry));
     }
 
-    public CrescoMeterRegistry(String instanceName, CrescoConfig config, Clock clock, HierarchicalNameMapper nameMapper, MetricRegistry metricRegistry,
+    public CrescoMeterRegistry(PluginBuilder plugin, String instanceName, CrescoConfig config, Clock clock, HierarchicalNameMapper nameMapper, MetricRegistry metricRegistry,
                                CrescoReporter crescoReporter) {
         super(config, metricRegistry, nameMapper, clock);
         this.reporter = crescoReporter;
         this.reporter.start();
     }
 
-    private static CrescoReporter defaultCrescoReporter(String instanceName, CrescoConfig config, MetricRegistry metricRegistry) {
-        return CrescoReporter.forRegistry(metricRegistry)
+    private static CrescoReporter defaultCrescoReporter(PluginBuilder plugin, String instanceName, CrescoConfig config, MetricRegistry metricRegistry) {
+        return CrescoReporter.forRegistry(plugin, metricRegistry)
                 .inDomain(instanceName)
                 .build();
     }
