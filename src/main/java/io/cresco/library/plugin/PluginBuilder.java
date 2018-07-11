@@ -10,6 +10,8 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,6 +35,8 @@ public class PluginBuilder {
     public PluginBuilder(AgentService agentService,String className, BundleContext context, Map<String,Object> configMap) {
 
         this.msgInProcessQueue = Executors.newCachedThreadPool();
+        //this.msgInProcessQueue = Executors.newFixedThreadPool(100);
+
 
         String identString = null;
 
@@ -109,9 +113,6 @@ public class PluginBuilder {
                 if(executor != null) {
                     //new Thread(new MessageProcessor(message)).start();
                     msgInProcessQueue.submit(new MessageProcessor(message));
-
-
-
                 }
             }
         }
@@ -250,7 +251,6 @@ public class PluginBuilder {
 
                     if ((retMsg != null) && (retMsg.getParams().keySet().contains("is_rpc"))) {
                         retMsg.setReturn();
-
                         //pick up self-rpc
                         String callId = retMsg.getParam(("callId-" + getRegion() + "-" +
                                 getAgent() + "-" + getPluginID()));

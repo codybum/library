@@ -1,12 +1,9 @@
 package io.cresco.library.utilities;
 
 
-import io.cresco.library.messaging.MsgEvent;
 import io.cresco.library.plugin.PluginBuilder;
 import org.osgi.service.log.LogService;
 
-import java.util.Date;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Cresco logger
@@ -16,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class CLogger {
     public enum Level {
-        None(-1), Error(0), Warn(1), Info(2), Debug(4), Trace(8);
+        Error(1), Warn(2), Info(3), Debug(4), Trace(4);
         private final int level;
         Level(int level) { this.level = level; }
         public int getValue() { return level; }
@@ -36,6 +33,7 @@ public class CLogger {
         this.issuingClassName = issuingClassName.substring(baseClassName.length() +1, issuingClassName.length()) ;
         this.level = level;
         logService = pluginBuilder.getLogService();
+
     }
 
     public void error(String logMessage) {
