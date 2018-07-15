@@ -1,4 +1,4 @@
-mvn clean package bundle:bundle 
+mvn clean package bundle:bundle -U 
 cp pom.xml ../repo/io/cresco/library/1.0-SNAPSHOT/library-1.0-SNAPSHOT.pom
 cp target/library-1.0-SNAPSHOT.jar ../repo/io/cresco/library/1.0-SNAPSHOT
 cp target/library-1.0-SNAPSHOT.jar ../agent/src/main/resources

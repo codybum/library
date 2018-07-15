@@ -14,16 +14,11 @@
     <jdk>1.8</jdk>
     <maven.compiler.version>3.5.1</maven.compiler.version>
     <gson.version>2.8.5</gson.version>
-    <commons.version>1.10</commons.version>
     <junit.version>4.12</junit.version>
-    <activemq.version>5.15.4</activemq.version>
-    <orientdb.version>2.2.36</orientdb.version>
 </properties>
 
 
 <dependencies>
-
-    <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.core -->
 
     <dependency>
         <groupId>org.osgi</groupId>
@@ -32,97 +27,12 @@
         <scope>provided</scope>
     </dependency>
 
-    <!--
-    <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.service.log</artifactId>
-        <version>1.4.0</version>
-        <scope>provided</scope>
-    </dependency>
-    -->
-
     <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>${gson.version}</version>
     </dependency>
 
-    <!--
-    <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
-        <version>${commons.version}</version>
-    </dependency>
-
--->
-    <!--
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-    </dependency>
-
-
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.25</version>
-        <scope>test</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.25</version>
-        <scope>test</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>2.11.0</version>
-
-    </dependency>
-    -->
-
-    <!-- ActiveMQ -->
-
-
-    <!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-all -->
-<!--
-    <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-all</artifactId>
-        <version>${activemq.version}</version>
-
-    </dependency>
--->
-
-    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-    <!--
-    <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>2.11.0</version>
-
-    </dependency>
--->
-<!--
-    <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-pool2</artifactId>
-        <version>2.5.0</version>
-    </dependency>
-
-    <dependency>
-        <groupId>commons-net</groupId>
-        <artifactId>commons-net</artifactId>
-        <version>3.6</version>
-    </dependency>
--->
-
-    <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
     <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-core</artifactId>
@@ -141,66 +51,13 @@
         </exclusions>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+    <!--
     <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>25.1-jre</version>
     </dependency>
-
-<!--
-    <dependency>
-        <groupId>org.ops4j.pax.logging</groupId>
-        <artifactId>pax-logging-api</artifactId>
-        <version>1.10.1</version>
-        <scope>provided</scope>
-    </dependency>
 -->
-
-    <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
-    <!--
-    <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna</artifactId>
-        <version>4.5.1</version>
-    </dependency>
-
-    <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna-platform</artifactId>
-        <version>4.5.1</version>
-    </dependency>
--->
-
-    <!--
-    <dependency>
-        <groupId>com.googlecode.concurrentlinkedhashmap</groupId>
-        <artifactId>concurrentlinkedhashmap-lru</artifactId>
-        <version>1.4.2</version>
-    </dependency>
--->
-
-    <!-- OrientDB -->
-
-    <!-- Embedded: 1. core 2. graphdb -->
-    <!-- Stand Alone: 1. graphdb 2. core -->
-<!--
-    <dependency>
-        <groupId>com.orientechnologies</groupId>
-        <artifactId>orientdb-core</artifactId>
-        <version>${orientdb.version}</version>
-        <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>com.orientechnologies</groupId>
-        <artifactId>orientdb-graphdb</artifactId>
-        <version>${orientdb.version}</version>
-        <scope>provided</scope>
-    </dependency>
--->
-
-
 </dependencies>
 
 <build>
@@ -231,22 +88,9 @@
                     <Import-Package>*;resolution:=optional</Import-Package>
                     <Embed-Dependency>!org.osgi.*;*</Embed-Dependency>
                     <Export-Package>
-                        <!--
-                        org.springframework.*;
-                        org.fusesource.*;
-                        com.orientechnologies.*;
-                        com.tinkerpop.*;
-                        javax.*;
-                        org.slf4j.*;
-                        com.google.*;
-                        com.googlecode.concurrentlinkedhashmap.*;
-                        com.sun.jna.*;
-                        org.apache.*;
-                        com.codahale.*;
-                        org.apache.commons.configuration.*;
-                        org.osgi.service.log.*;
-                        -->
-                        com.google.common.*;
+                        !org.slf4j.*;
+                        !org.apache.commons.*;
+                        !com.google.common.*;
                         com.codahale.metrics.*;
                         org.LatencyUtils;
                         io.micrometer.*;
