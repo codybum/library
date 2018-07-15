@@ -8,7 +8,7 @@ import io.cresco.library.utilities.CLogger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.log.LogService;
+//import org.osgi.service.log.LogService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 public class PluginBuilder {
 
     private AgentService agentService;
-    private LogService logService;
+    //private LogService logService;
     private Config config;
     private CrescoMeterRegistry crescoMeterRegistry;
     private String baseClassName;
@@ -71,6 +71,7 @@ public class PluginBuilder {
 
         this.crescoMeterRegistry = new CrescoMeterRegistry(this,identString);
 
+        /*
         ServiceReference ref = context.getServiceReference(LogService.class.getName());
         if (ref != null)
         {
@@ -84,6 +85,7 @@ public class PluginBuilder {
         } else {
             System.out.println("Can't Find :" + LogService.class.getName());
         }
+        */
 
         this.rpc = new RPC(this);
 
@@ -93,7 +95,6 @@ public class PluginBuilder {
         return agentService;
     }
 
-    public LogService getLogService() { return logService; }
     public Config getConfig() { return config;}
     public void setConfig(Map<String,Object> configMap) {
         this.config = new Config(configMap);

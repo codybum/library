@@ -2,7 +2,9 @@ package io.cresco.library.utilities;
 
 
 import io.cresco.library.plugin.PluginBuilder;
-import org.osgi.service.log.LogService;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -25,14 +27,24 @@ public class CLogger {
     private String issuingClassName;
     private String baseClassName;
     private PluginBuilder pluginBuilder;
-    private LogService logService;
+    private Logger logService;
+    //private LogService logService;
+    private String source;
 
     public CLogger(PluginBuilder pluginBuilder, String baseClassName, String issuingClassName, Level level) {
         this.pluginBuilder = pluginBuilder;
         this.baseClassName = baseClassName;
         this.issuingClassName = issuingClassName.substring(baseClassName.length() +1, issuingClassName.length()) ;
         this.level = level;
-        logService = pluginBuilder.getLogService();
+
+        if(pluginBuilder.getPluginID() != null) {
+            source = pluginBuilder.getPluginID();
+        } else {
+            source = "agent";
+        }
+
+        this.logService = Logger.getLogger(source);
+        //logService = pluginBuilder.getLogService();
 
     }
 
@@ -90,18 +102,14 @@ public class CLogger {
 
         //String className = log.getParam("full_class");
 
-        String source = null;
-        if(pluginBuilder.getPluginID() != null) {
-            source = pluginBuilder.getPluginID();
-        } else {
-            source = "agent";
-        }
 
         String logMessage = "[" + source + ": " + baseClassName + "]";
             logMessage = logMessage + "[" + formatClassName(issuingClassName) + "]";
         logMessage = logMessage + " " + messageBody;
 
-        logService.log(level.getValue(),logMessage);
+
+
+        logService.log(java.util.logging.Level.SEVERE,logMessage);
         /*
         MsgEvent toSend = new MsgEvent(MsgEvent.Type.LOG, region, null, null, logMessage);
         toSend.setParam("src_region", region);
