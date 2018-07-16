@@ -14,8 +14,11 @@ import java.util.logging.Logger;
  * @since 0.1.0
  */
 public class CLogger {
+
     public enum Level {
-        Error(1), Warn(2), Info(3), Debug(4), Trace(4);
+
+        None(-1), Error(0), Warn(1), Info(2), Debug(4), Trace(8);
+
         private final int level;
         Level(int level) { this.level = level; }
         public int getValue() { return level; }
@@ -23,6 +26,7 @@ public class CLogger {
             return check.getValue() <= this.getValue();
         }
     }
+
     private Level level;
     private String issuingClassName;
     private String baseClassName;
@@ -100,33 +104,32 @@ public class CLogger {
 
     public void log(String messageBody, Level level) {
 
-        //String className = log.getParam("full_class");
+        java.util.logging.Level l2 = null;
 
+        //Error(1), Warn(2), Info(3), Debug(4), Trace(4);
+        String levelString = level.name();
+
+        switch (levelString) {
+            case "Trace":  l2 = java.util.logging.Level.FINER;
+                break;
+            case "Debug":  l2 = java.util.logging.Level.FINE;
+                break;
+            case "Info":  l2 = java.util.logging.Level.INFO;
+                break;
+            case "Warn":  l2 = java.util.logging.Level.WARNING;
+                break;
+            case "Error":  l2 = java.util.logging.Level.SEVERE;
+                break;
+            default: l2 = java.util.logging.Level.SEVERE;
+                break;
+        }
 
         String logMessage = "[" + source + ": " + baseClassName + "]";
             logMessage = logMessage + "[" + formatClassName(issuingClassName) + "]";
         logMessage = logMessage + " " + messageBody;
 
+        logService.log(l2,logMessage);
 
-
-        logService.log(java.util.logging.Level.SEVERE,logMessage);
-        /*
-        MsgEvent toSend = new MsgEvent(MsgEvent.Type.LOG, region, null, null, logMessage);
-        toSend.setParam("src_region", region);
-        if (agent != null) {
-            toSend.setParam("src_agent", agent);
-            if (plugin != null)
-                toSend.setParam("src_plugin", plugin);
-        }
-        if (issuingClass != null) {
-            toSend.setParam("class", issuingClass.getSimpleName());
-            toSend.setParam("full_class", issuingClass.getCanonicalName());
-        }
-        toSend.setParam("ts", String.valueOf(new Date().getTime()));
-        toSend.setParam("dst_region", region);
-        toSend.setParam("log_level", level.name());
-        log(toSend);
-        */
     }
 
     private String formatClassName(String className) {

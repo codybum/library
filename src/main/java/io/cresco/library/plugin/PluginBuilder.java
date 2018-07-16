@@ -190,10 +190,6 @@ public class PluginBuilder {
     public boolean isActive() { return this.isActive; }
     public void setIsActive(boolean isActive) { this.isActive = isActive; }
 
-    public void sendMsgEvent(MsgEvent msg) {
-        System.out.println("PLUGIN SEND MSGEVENT !");
-    }
-
     protected class MessageProcessor implements Runnable {
         /** Incoming MsgEvent object */
         private MsgEvent msg;
