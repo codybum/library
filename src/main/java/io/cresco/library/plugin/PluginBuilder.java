@@ -152,6 +152,10 @@ public class PluginBuilder {
         return getMsgEvent(type, dstRegion,dstAgent, dstPlugin,false,false);
     }
 
+    public MsgEvent getKPIMsgEvent() {
+        return getMsgEvent(MsgEvent.Type.KPI,getRegion(), getAgent(), null,true,false);
+    }
+
     public MsgEvent getRegionalControllerMsgEvent(MsgEvent.Type type) {
         return getMsgEvent(type,getRegion(), getAgent(), null,true,false);
     }
