@@ -266,6 +266,14 @@ public class MsgEvent {
         params.put(key, DatatypeConverter.printBase64Binary(stringCompress(value)));
     }
 
+    public void setDataParam(String key, byte[] value) {
+        params.put(key, DatatypeConverter.printBase64Binary(value));
+    }
+
+    public void setCompressedDataParam(String key, byte[] value) {
+        params.put(key, DatatypeConverter.printBase64Binary(value));
+    }
+
     public String getCompressedParam(String key) {
         String value = params.get(key);
         if (value == null)
@@ -280,8 +288,8 @@ public class MsgEvent {
         }
     }
 
-    public byte[] stringCompress(String str) {
-        byte[] dataToCompress = str.getBytes(StandardCharsets.UTF_8);
+    public byte[] dataCompress(byte[] dataToCompress) {
+
         byte[] compressedData;
         try {
             ByteArrayOutputStream byteStream =
@@ -304,4 +312,12 @@ public class MsgEvent {
         }
         return compressedData;
     }
+
+    public byte[] stringCompress(String str) {
+
+        byte[] dataToCompress = str.getBytes(StandardCharsets.UTF_8);
+        return dataCompress(dataToCompress);
+    }
+
+
 }
