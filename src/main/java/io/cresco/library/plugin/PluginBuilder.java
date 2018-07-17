@@ -18,9 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.jar.Attributes;
@@ -354,6 +352,54 @@ public class PluginBuilder {
             e.printStackTrace();
         }
         return jarString;
+    }
+
+    public List<Map<String,String>> getPluginInventory(String repoPath) {
+        List<Map<String,String>> pluginFiles = null;
+        try
+        {
+            File folder = new File(repoPath);
+            if(folder.exists())
+            {
+                pluginFiles = new ArrayList<>();
+                File[] listOfFiles = folder.listFiles();
+
+                for (int i = 0; i < listOfFiles.length; i++)
+                {
+                    if (listOfFiles[i].isFile())
+                    {
+                        try{
+                            String jarPath = listOfFiles[i].getAbsolutePath();
+                            String jarFileName = listOfFiles[i].getName();
+                            String pluginName = getPluginName(jarPath);
+                            String pluginMD5 = getJarMD5(jarPath);
+                            String pluginVersion = getPluginVersion(jarPath);
+                            //System.out.println(pluginName + " " + jarFileName + " " + pluginVersion + " " + pluginMD5);
+                            //pluginFiles.add(listOfFiles[i].getAbsolutePath());
+                            Map<String,String> pluginMap = new HashMap<>();
+                            pluginMap.put("pluginname",pluginName);
+                            pluginMap.put("jarfile",jarFileName);
+                            pluginMap.put("md5",pluginMD5);
+                            pluginMap.put("version",pluginVersion);
+                            pluginFiles.add(pluginMap);
+                        } catch(Exception ex) {
+
+                        }
+
+                    }
+
+                }
+                if(pluginFiles.isEmpty())
+                {
+                    pluginFiles = null;
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            pluginFiles = null;
+        }
+        return pluginFiles;
     }
 
 }
