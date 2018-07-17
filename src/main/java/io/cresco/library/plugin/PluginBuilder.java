@@ -10,11 +10,22 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 //import org.osgi.service.log.LogService;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 public class PluginBuilder {
 
@@ -271,5 +282,78 @@ public class PluginBuilder {
         }
     }
 
+    private String getPluginName(String jarFile) {
+        String version = null;
+        try{
+            //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            //logger.debug("JARFILE:" + jarFile);
+            //File file = new File(jarFile.substring(5, (jarFile.length() )));
+            File file = new File(jarFile);
+
+            boolean calcHash = true;
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long fileTime = attr.creationTime().toMillis();
+
+            FileInputStream fis = new FileInputStream(file);
+            @SuppressWarnings("resource")
+            JarInputStream jarStream = new JarInputStream(fis);
+            Manifest mf = jarStream.getManifest();
+
+            Attributes mainAttribs = mf.getMainAttributes();
+            version = mainAttribs.getValue("Bundle-SymbolicName");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+
+        }
+        return version;
+    }
+
+    private String getPluginVersion(String jarFile) {
+        String version = null;
+        try{
+            //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            //logger.debug("JARFILE:" + jarFile);
+            //File file = new File(jarFile.substring(5, (jarFile.length() )));
+            File file = new File(jarFile);
+
+            boolean calcHash = true;
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long fileTime = attr.creationTime().toMillis();
+
+            FileInputStream fis = new FileInputStream(file);
+            @SuppressWarnings("resource")
+            JarInputStream jarStream = new JarInputStream(fis);
+            Manifest mf = jarStream.getManifest();
+
+            Attributes mainAttribs = mf.getMainAttributes();
+            version = mainAttribs.getValue("Bundle-Version");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+
+        }
+        return version;
+    }
+
+    private String getJarMD5(String pluginFile) {
+        String jarString = null;
+        try
+        {
+            Path path = Paths.get(pluginFile);
+            byte[] data = Files.readAllBytes(path);
+
+            MessageDigest m= MessageDigest.getInstance("MD5");
+            m.update(data);
+            jarString = new BigInteger(1,m.digest()).toString(16);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return jarString;
+    }
 
 }
