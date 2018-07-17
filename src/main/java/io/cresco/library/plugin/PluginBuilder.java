@@ -282,7 +282,7 @@ public class PluginBuilder {
         }
     }
 
-    private String getPluginName(String jarFile) {
+    public String getPluginName(String jarFile) {
         String version = null;
         try{
             //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -310,7 +310,7 @@ public class PluginBuilder {
         return version;
     }
 
-    private String getPluginVersion(String jarFile) {
+    public String getPluginVersion(String jarFile) {
         String version = null;
         try{
             //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -338,7 +338,7 @@ public class PluginBuilder {
         return version;
     }
 
-    private String getJarMD5(String pluginFile) {
+    public String getJarMD5(String pluginFile) {
         String jarString = null;
         try
         {
