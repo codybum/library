@@ -122,7 +122,6 @@ public class MsgEvent {
     public boolean dstIsLocal(String localRegion, String localAgent, String localPlugin) {
         boolean isLocal = false;
 
-        try {
             if(dst_region.equals(localRegion) && dst_agent.equals(localAgent)) {
 
                 if((localPlugin == null) && (dst_plugin == null)) {
@@ -133,11 +132,6 @@ public class MsgEvent {
                     }
                 }
             }
-
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
 
         return isLocal;
     }
@@ -274,6 +268,19 @@ public class MsgEvent {
         params.put(key, DatatypeConverter.printBase64Binary(value));
     }
 
+    public byte[] getDataParam(String key) {
+        byte[] byteArray = null;
+        try {
+            String value = params.get(key);
+            if (value != null) {
+                byteArray = DatatypeConverter.parseBase64Binary(value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return byteArray;
+    }
+
     public String getCompressedParam(String key) {
         String value = params.get(key);
         if (value == null)
@@ -319,5 +326,8 @@ public class MsgEvent {
         return dataCompress(dataToCompress);
     }
 
+    public boolean paramsContains(String key) {
+        return params.containsKey(key);
+    }
 
 }

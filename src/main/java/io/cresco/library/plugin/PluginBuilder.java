@@ -118,13 +118,19 @@ public class PluginBuilder {
             String callId = message.getParam(("callId-" + this.getRegion() + "-" +
                     this.getAgent() + "-" + this.getPluginID()));
             if (callId != null) {
-                this.receiveRPC(callId, message);
-            } else {
-                if(executor != null) {
-                    //new Thread(new MessageProcessor(message)).start();
-                    msgInProcessQueue.submit(new MessageProcessor(message));
+                //don't return rpc directly back to caller if self-called
+                int ttl = Integer.parseInt(message.getParam("ttl"));
+                if(ttl > 0) {
+                    this.receiveRPC(callId, message);
+                    return;
                 }
             }
+
+            if(executor != null) {
+                    //new Thread(new MessageProcessor(message)).start();
+                    msgInProcessQueue.submit(new MessageProcessor(message));
+            }
+
         }
     }
 
@@ -261,11 +267,13 @@ public class PluginBuilder {
 
                     if ((retMsg != null) && (retMsg.getParams().keySet().contains("is_rpc"))) {
                         retMsg.setReturn();
-                        //pick up self-rpc
+                        //pick up self-rpc, unless ttl == 0
                         String callId = retMsg.getParam(("callId-" + getRegion() + "-" +
                                 getAgent() + "-" + getPluginID()));
+
+                        //if ((callId != null) && (ttl > 0)) {
                         if (callId != null) {
-                            receiveRPC(callId, retMsg);
+                                receiveRPC(callId, retMsg);
                         } else {
                             msgOut(retMsg);
                         }
@@ -276,6 +284,7 @@ public class PluginBuilder {
 
             } catch (Exception e) {
                 logger.error("Message Execution Exception: {}", e.getMessage());
+                System.out.println("MessageProcessor ERROR : " + msg.getParams());
             }
         }
     }
