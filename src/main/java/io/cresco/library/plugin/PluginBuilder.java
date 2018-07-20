@@ -235,34 +235,35 @@ public class PluginBuilder {
 
                     MsgEvent retMsg = null;
 
+                    if (executor != null) {
 
-                    switch (msg.getMsgType().toString().toUpperCase()) {
-                        case "CONFIG":
-                            retMsg = executor.executeCONFIG(msg);
-                            break;
-                        case "DISCOVER":
-                            retMsg = executor.executeDISCOVER(msg);
-                            break;
-                        case "ERROR":
-                            retMsg = executor.executeERROR(msg);
-                            break;
-                        case "EXEC":
-                            retMsg = executor.executeEXEC(msg);
-                            break;
-                        case "INFO":
-                            retMsg = executor.executeINFO(msg);
-                            break;
-                        case "WATCHDOG":
-                            retMsg = executor.executeWATCHDOG(msg);
-                            break;
-                        case "KPI":
-                            retMsg = executor.executeKPI(msg);
-                            break;
+                        switch (msg.getMsgType().toString().toUpperCase()) {
+                            case "CONFIG":
+                                retMsg = executor.executeCONFIG(msg);
+                                break;
+                            case "DISCOVER":
+                                retMsg = executor.executeDISCOVER(msg);
+                                break;
+                            case "ERROR":
+                                retMsg = executor.executeERROR(msg);
+                                break;
+                            case "EXEC":
+                                retMsg = executor.executeEXEC(msg);
+                                break;
+                            case "INFO":
+                                retMsg = executor.executeINFO(msg);
+                                break;
+                            case "WATCHDOG":
+                                retMsg = executor.executeWATCHDOG(msg);
+                                break;
+                            case "KPI":
+                                retMsg = executor.executeKPI(msg);
+                                break;
 
-                        default:
-                            logger.error("UNKNOWN MESSAGE TYPE! " + msg.getParams());
-                            break;
-                    }
+                            default:
+                                logger.error("UNKNOWN MESSAGE TYPE! " + msg.getParams());
+                                break;
+                        }
 
 
                     if ((retMsg != null) && (retMsg.getParams().keySet().contains("is_rpc"))) {
@@ -273,18 +274,22 @@ public class PluginBuilder {
 
                         //if ((callId != null) && (ttl > 0)) {
                         if (callId != null) {
-                                receiveRPC(callId, retMsg);
+                            receiveRPC(callId, retMsg);
                         } else {
                             msgOut(retMsg);
                         }
 
 
                     }
+                } else {
+                        System.out.println("Executor == null " + msg.printHeader() + " plugin: " + getPluginID());
+                    }
                 }
 
             } catch (Exception e) {
-                logger.error("Message Execution Exception: {}", e.getMessage());
-                System.out.println("MessageProcessor ERROR : " + msg.getParams());
+                //logger.error("Message Execution Exception: {}", e.getMessage());
+                //System.out.println("MessageProcessor ERROR : " + msg.getParams());
+                e.printStackTrace();
             }
         }
     }
@@ -305,14 +310,16 @@ public class PluginBuilder {
             @SuppressWarnings("resource")
             JarInputStream jarStream = new JarInputStream(fis);
             Manifest mf = jarStream.getManifest();
-
-            Attributes mainAttribs = mf.getMainAttributes();
-            version = mainAttribs.getValue("Bundle-SymbolicName");
+            if(mf != null) {
+                Attributes mainAttribs = mf.getMainAttributes();
+                if(mainAttribs != null) {
+                    version = mainAttribs.getValue("Bundle-SymbolicName");
+                }
+            }
         }
         catch(Exception ex)
         {
             ex.printStackTrace();
-
         }
         return version;
     }
@@ -334,8 +341,12 @@ public class PluginBuilder {
             JarInputStream jarStream = new JarInputStream(fis);
             Manifest mf = jarStream.getManifest();
 
-            Attributes mainAttribs = mf.getMainAttributes();
-            version = mainAttribs.getValue("Bundle-Version");
+            if(mf != null) {
+                Attributes mainAttribs = mf.getMainAttributes();
+                if(mainAttribs != null) {
+                    version = mainAttribs.getValue("Bundle-Version");
+                }
+            }
         }
         catch(Exception ex)
         {
