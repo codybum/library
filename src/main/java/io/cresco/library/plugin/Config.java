@@ -30,7 +30,12 @@ public class Config {
      * @return                  Value of entry, null if missing
      */
     public Boolean getBooleanParam(String param) {
-        String env = System.getenv(ENV_PREFIX + param);
+
+        String env = System.getProperty(param);
+        if(env == null) {
+            env = System.getenv(ENV_PREFIX + param);
+        }
+
         if (env != null) {
             if (env.toLowerCase().trim().equals("true") || env.trim().equals("1")) {
                 return true;
@@ -69,7 +74,12 @@ public class Config {
      */
     public Double getDoubleParam(String param) {
         try {
-            return Double.parseDouble(System.getenv(ENV_PREFIX + param));
+            String env = System.getProperty(param);
+            if(env == null) {
+                env = System.getenv(ENV_PREFIX + param);
+            }
+            return Double.parseDouble(env);
+
         } catch (NumberFormatException nfe) {
             try {
                 if(configMap.containsKey(param)) {
@@ -102,7 +112,11 @@ public class Config {
      */
     public Integer getIntegerParam(String param) {
         try {
-            return Integer.parseInt(System.getenv(ENV_PREFIX + param));
+            String env = System.getProperty(param);
+            if(env == null) {
+                env = System.getenv(ENV_PREFIX + param);
+            }
+            return Integer.parseInt(env);
         } catch (NumberFormatException nfe) {
             try {
                 if(configMap.containsKey(param)) {
@@ -135,7 +149,11 @@ public class Config {
      */
     public Long getLongParam(String param) {
         try {
-            return Long.parseLong(System.getenv(ENV_PREFIX + param));
+            String env = System.getProperty(param);
+            if(env == null) {
+                env = System.getenv(ENV_PREFIX + param);
+            }
+            return Long.parseLong(env);
         } catch (NumberFormatException nfe) {
             try {
                 if(configMap.containsKey(param)) {
@@ -166,7 +184,12 @@ public class Config {
      * @return                  Value of entry, null if missing
      */
     public String getStringParam(String param) {
-        String env = System.getenv(ENV_PREFIX + param);
+
+        String env = System.getProperty(param);
+        if(env == null) {
+            env = System.getenv(ENV_PREFIX + param);
+        }
+
         if (env != null)
             return env;
         try {
