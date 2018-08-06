@@ -148,6 +148,21 @@ public class MsgEvent {
         setParam("dst_plugin", plugin);
     }
 
+    public void setForwardDst(String dstRegion, String dstAgent, String dstPlugin) {
+        this.dst_region = dstRegion;
+        this.dst_agent = dstAgent;
+        this.dst_plugin = dstPlugin;
+        if(dstPlugin == null) {
+            if (paramsContains(dst_plugin)) {
+                removeParam(dst_plugin);
+            }
+        } else {
+            setParam("dst_plugin", dstPlugin);
+        }
+        setParam("dst_region", dstRegion);
+        setParam("dst_agent", dstAgent);
+
+    }
 
     public void setReturn() {
 

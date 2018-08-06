@@ -56,7 +56,15 @@ public class PluginBuilder {
                 boolean assign = sr.isAssignableTo(context.getBundle(), AgentService.class.getName());
 
                 if (assign) {
-                    this.agentService = (AgentService) context.getService(sr);
+                    boolean isAssigned = false;
+                    while(!isAssigned) {
+                        try {
+                            this.agentService = (AgentService) context.getService(sr);
+                            isAssigned = true;
+                        } catch (Exception ex) {
+                            System.out.println("Failed AgentService Assignment");
+                        }
+                    }
                 } else {
                     System.out.println("Could not assign AgentService!");
                 }
