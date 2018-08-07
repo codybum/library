@@ -2,8 +2,6 @@ package io.cresco.library.utilities;
 
 
 import io.cresco.library.plugin.PluginBuilder;
-
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -22,17 +20,14 @@ public class CLogger {
         private final int level;
         Level(int level) { this.level = level; }
         public int getValue() { return level; }
-        public boolean toShow(Level check) {
-            return check.getValue() <= this.getValue();
-        }
     }
+
 
     private Level level;
     private String issuingClassName;
     private String baseClassName;
     private PluginBuilder pluginBuilder;
     private Logger logService;
-    //private LogService logService;
     private String source;
 
     public CLogger(PluginBuilder pluginBuilder, String baseClassName, String issuingClassName, Level level) {
@@ -47,82 +42,99 @@ public class CLogger {
             source = "agent";
         }
 
-        this.logService = Logger.getLogger(source);
-        //logService = pluginBuilder.getLogService();
+        String logIdent = source  + ":" + issuingClassName;
+        logIdent = logIdent.toLowerCase();
+
+        pluginBuilder.setLogLevel(logIdent,level);
+
+        this.logService = Logger.getLogger(logIdent);
+        this.logService.setLevel(java.util.logging.Level.ALL);
+
+
 
     }
 
     public void error(String logMessage) {
-        if (!level.toShow(Level.Error)) return;
         log(logMessage, Level.Error);
     }
 
     public void error(String logMessage, Object ... params) {
-        if (!level.toShow(Level.Error)) return;
         error(replaceBrackets(logMessage, params));
     }
 
     public void warn(String logMessage) {
-        if (!level.toShow(Level.Warn)) return;
         log(logMessage, Level.Warn);
     }
 
     public void warn(String logMessage, Object ... params) {
-        if (!level.toShow(Level.Warn)) return;
         warn(replaceBrackets(logMessage, params));
     }
 
     public void info(String logMessage) {
-        if (!level.toShow(Level.Info)) return;
         log(logMessage, Level.Info);
     }
 
     public void info(String logMessage, Object ... params) {
-        if (!level.toShow(Level.Info)) return;
         info(replaceBrackets(logMessage, params));
     }
 
     public void debug(String logMessage) {
-        if (!level.toShow(Level.Debug)) return;
         log(logMessage, Level.Debug);
     }
 
     public void debug(String logMessage, Object ... params) {
-        if (!level.toShow(Level.Debug)) return;
         debug(replaceBrackets(logMessage, params));
     }
 
-    public void trace(String logMessage) {
-        if (!level.toShow(Level.Trace)) return;
-        log(logMessage, Level.Trace);
-    }
+    public void trace(String logMessage) { log(logMessage, Level.Trace); }
 
     public void trace(String logMessage, Object ... params) {
-        if (!level.toShow(Level.Trace)) return;
         trace(replaceBrackets(logMessage, params));
+    }
+
+    private java.util.logging.Level convertLevel(Level level) {
+        java.util.logging.Level l2 = null;
+
+        /*
+FINEST  -> TRACE
+FINER   -> DEBUG
+FINE    -> DEBUG
+CONFIG  -> INFO
+INFO    -> INFO
+WARNING -> WARN
+SEVERE  -> ERROR
+         */
+
+        try {
+            //Error(1), Warn(2), Info(3), Debug(4), Trace(4);
+            String levelString = level.name();
+
+            switch (levelString) {
+                case "Trace":  l2 = java.util.logging.Level.FINEST;
+                    break;
+                case "Debug":  l2 = java.util.logging.Level.FINER;
+                    break;
+                case "Info":  l2 = java.util.logging.Level.INFO;
+                    break;
+                case "Warn":  l2 = java.util.logging.Level.WARNING;
+                    break;
+                case "Error":  l2 = java.util.logging.Level.SEVERE;
+                    break;
+                default: l2 = java.util.logging.Level.SEVERE;
+                    break;
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        if(l2 == null) {
+            l2 = java.util.logging.Level.SEVERE;
+        }
+        return l2;
     }
 
     public void log(String messageBody, Level level) {
 
-        java.util.logging.Level l2 = null;
-
-        //Error(1), Warn(2), Info(3), Debug(4), Trace(4);
-        String levelString = level.name();
-
-        switch (levelString) {
-            case "Trace":  l2 = java.util.logging.Level.FINER;
-                break;
-            case "Debug":  l2 = java.util.logging.Level.FINE;
-                break;
-            case "Info":  l2 = java.util.logging.Level.INFO;
-                break;
-            case "Warn":  l2 = java.util.logging.Level.WARNING;
-                break;
-            case "Error":  l2 = java.util.logging.Level.SEVERE;
-                break;
-            default: l2 = java.util.logging.Level.SEVERE;
-                break;
-        }
+        java.util.logging.Level l2 = convertLevel(level);
 
         String logMessage = "[" + source + ": " + baseClassName + "]";
             logMessage = logMessage + "[" + formatClassName(issuingClassName) + "]";

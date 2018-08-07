@@ -27,13 +27,6 @@
         <scope>provided</scope>
     </dependency>
 
-    <!--
-    <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-    </dependency>
--->
     <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-core</artifactId>
@@ -52,20 +45,6 @@
         </exclusions>
     </dependency>
 
-    <!--
-    <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>25.1-jre</version>
-    </dependency>
-
-    !org.slf4j.*;
-                        !org.apache.commons.*;
-                        !com.google.common.*;
-                        !com.google.gson.*;
-
-
--->
 </dependencies>
 
 <build>

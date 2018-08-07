@@ -6,9 +6,7 @@ import io.cresco.library.messaging.RPC;
 import io.cresco.library.metrics.CrescoMeterRegistry;
 import io.cresco.library.utilities.CLogger;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
-//import org.osgi.service.log.LogService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,24 +86,14 @@ public class PluginBuilder {
 
         this.crescoMeterRegistry = new CrescoMeterRegistry(this,identString);
 
-        /*
-        ServiceReference ref = context.getServiceReference(LogService.class.getName());
-        if (ref != null)
-        {
-            boolean assign = ref.isAssignableTo(context.getBundle(), LogService.class.getName());
-            if(assign) {
-                logService = (LogService) context.getService(ref);
-            } else {
-                System.out.println("Could not assign LogService!");
-                
-            }
-        } else {
-            System.out.println("Can't Find :" + LogService.class.getName());
-        }
-        */
-
         this.rpc = new RPC(this);
 
+    }
+
+    public void setLogLevel(String logId, CLogger.Level level) {
+        if(agentService != null) {
+            agentService.setLogLevel(logId,level);
+        }
     }
 
     public AgentService getAgentService() {
