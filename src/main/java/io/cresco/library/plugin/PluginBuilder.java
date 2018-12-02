@@ -6,15 +6,22 @@ import io.cresco.library.messaging.RPC;
 import io.cresco.library.metrics.CrescoMeterRegistry;
 import io.cresco.library.utilities.CLogger;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
-//import org.osgi.service.log.LogService;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 public class PluginBuilder {
 
@@ -47,7 +54,15 @@ public class PluginBuilder {
                 boolean assign = sr.isAssignableTo(context.getBundle(), AgentService.class.getName());
 
                 if (assign) {
-                    this.agentService = (AgentService) context.getService(sr);
+                    boolean isAssigned = false;
+                    while(!isAssigned) {
+                        try {
+                            this.agentService = (AgentService) context.getService(sr);
+                            isAssigned = true;
+                        } catch (Exception ex) {
+                            System.out.println("Failed AgentService Assignment");
+                        }
+                    }
                 } else {
                     System.out.println("Could not assign AgentService!");
                 }
@@ -71,24 +86,14 @@ public class PluginBuilder {
 
         this.crescoMeterRegistry = new CrescoMeterRegistry(this,identString);
 
-        /*
-        ServiceReference ref = context.getServiceReference(LogService.class.getName());
-        if (ref != null)
-        {
-            boolean assign = ref.isAssignableTo(context.getBundle(), LogService.class.getName());
-            if(assign) {
-                logService = (LogService) context.getService(ref);
-            } else {
-                System.out.println("Could not assign LogService!");
-                
-            }
-        } else {
-            System.out.println("Can't Find :" + LogService.class.getName());
-        }
-        */
-
         this.rpc = new RPC(this);
 
+    }
+
+    public void setLogLevel(String logId, CLogger.Level level) {
+        if(agentService != null) {
+            agentService.setLogLevel(logId,level);
+        }
     }
 
     public AgentService getAgentService() {
@@ -109,13 +114,19 @@ public class PluginBuilder {
             String callId = message.getParam(("callId-" + this.getRegion() + "-" +
                     this.getAgent() + "-" + this.getPluginID()));
             if (callId != null) {
-                this.receiveRPC(callId, message);
-            } else {
-                if(executor != null) {
-                    //new Thread(new MessageProcessor(message)).start();
-                    msgInProcessQueue.submit(new MessageProcessor(message));
+                //don't return rpc directly back to caller if self-called
+                int ttl = Integer.parseInt(message.getParam("ttl"));
+                if(ttl > 0) {
+                    this.receiveRPC(callId, message);
+                    return;
                 }
             }
+
+            if(executor != null) {
+                    //new Thread(new MessageProcessor(message)).start();
+                    msgInProcessQueue.submit(new MessageProcessor(message));
+            }
+
         }
     }
 
@@ -150,6 +161,10 @@ public class PluginBuilder {
 
     public MsgEvent getGlobalPluginMsgEvent(MsgEvent.Type type, String dstRegion, String dstAgent, String dstPlugin) {
         return getMsgEvent(type, dstRegion,dstAgent, dstPlugin,false,false);
+    }
+
+    public MsgEvent getKPIMsgEvent() {
+        return getMsgEvent(MsgEvent.Type.KPI,getRegion(), getAgent(), null,true,false);
     }
 
     public MsgEvent getRegionalControllerMsgEvent(MsgEvent.Type type) {
@@ -190,10 +205,6 @@ public class PluginBuilder {
     public boolean isActive() { return this.isActive; }
     public void setIsActive(boolean isActive) { this.isActive = isActive; }
 
-    public void sendMsgEvent(MsgEvent msg) {
-        System.out.println("PLUGIN SEND MSGEVENT !");
-    }
-
     protected class MessageProcessor implements Runnable {
         /** Incoming MsgEvent object */
         private MsgEvent msg;
@@ -220,41 +231,44 @@ public class PluginBuilder {
 
                     MsgEvent retMsg = null;
 
+                    if (executor != null) {
 
-                    switch (msg.getMsgType().toString().toUpperCase()) {
-                        case "CONFIG":
-                            retMsg = executor.executeCONFIG(msg);
-                            break;
-                        case "DISCOVER":
-                            retMsg = executor.executeDISCOVER(msg);
-                            break;
-                        case "ERROR":
-                            retMsg = executor.executeERROR(msg);
-                            break;
-                        case "EXEC":
-                            retMsg = executor.executeEXEC(msg);
-                            break;
-                        case "INFO":
-                            retMsg = executor.executeINFO(msg);
-                            break;
-                        case "WATCHDOG":
-                            retMsg = executor.executeWATCHDOG(msg);
-                            break;
-                        case "KPI":
-                            retMsg = executor.executeKPI(msg);
-                            break;
+                        switch (msg.getMsgType().toString().toUpperCase()) {
+                            case "CONFIG":
+                                retMsg = executor.executeCONFIG(msg);
+                                break;
+                            case "DISCOVER":
+                                retMsg = executor.executeDISCOVER(msg);
+                                break;
+                            case "ERROR":
+                                retMsg = executor.executeERROR(msg);
+                                break;
+                            case "EXEC":
+                                retMsg = executor.executeEXEC(msg);
+                                break;
+                            case "INFO":
+                                retMsg = executor.executeINFO(msg);
+                                break;
+                            case "WATCHDOG":
+                                retMsg = executor.executeWATCHDOG(msg);
+                                break;
+                            case "KPI":
+                                retMsg = executor.executeKPI(msg);
+                                break;
 
-                        default:
-                            logger.error("UNKNOWN MESSAGE TYPE! " + msg.getParams());
-                            break;
-                    }
+                            default:
+                                logger.error("UNKNOWN MESSAGE TYPE! " + msg.getParams());
+                                break;
+                        }
 
 
                     if ((retMsg != null) && (retMsg.getParams().keySet().contains("is_rpc"))) {
                         retMsg.setReturn();
-                        //pick up self-rpc
+                        //pick up self-rpc, unless ttl == 0
                         String callId = retMsg.getParam(("callId-" + getRegion() + "-" +
                                 getAgent() + "-" + getPluginID()));
+
+                        //if ((callId != null) && (ttl > 0)) {
                         if (callId != null) {
                             receiveRPC(callId, retMsg);
                         } else {
@@ -263,13 +277,145 @@ public class PluginBuilder {
 
 
                     }
+                } else {
+                        System.out.println("Executor == null " + msg.printHeader() + " plugin: " + getPluginID());
+                    }
                 }
 
             } catch (Exception e) {
-                logger.error("Message Execution Exception: {}", e.getMessage());
+                //logger.error("Message Execution Exception: {}", e.getMessage());
+                //System.out.println("MessageProcessor ERROR : " + msg.getParams());
+                e.printStackTrace();
             }
         }
     }
 
+    public String getPluginName(String jarFile) {
+        String version = null;
+        try{
+            //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            //logger.debug("JARFILE:" + jarFile);
+            //File file = new File(jarFile.substring(5, (jarFile.length() )));
+            File file = new File(jarFile);
+
+            boolean calcHash = true;
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long fileTime = attr.creationTime().toMillis();
+
+            FileInputStream fis = new FileInputStream(file);
+            @SuppressWarnings("resource")
+            JarInputStream jarStream = new JarInputStream(fis);
+            Manifest mf = jarStream.getManifest();
+            if(mf != null) {
+                Attributes mainAttribs = mf.getMainAttributes();
+                if(mainAttribs != null) {
+                    version = mainAttribs.getValue("Bundle-SymbolicName");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return version;
+    }
+
+    public String getPluginVersion(String jarFile) {
+        String version = null;
+        try{
+            //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            //logger.debug("JARFILE:" + jarFile);
+            //File file = new File(jarFile.substring(5, (jarFile.length() )));
+            File file = new File(jarFile);
+
+            boolean calcHash = true;
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long fileTime = attr.creationTime().toMillis();
+
+            FileInputStream fis = new FileInputStream(file);
+            @SuppressWarnings("resource")
+            JarInputStream jarStream = new JarInputStream(fis);
+            Manifest mf = jarStream.getManifest();
+
+            if(mf != null) {
+                Attributes mainAttribs = mf.getMainAttributes();
+                if(mainAttribs != null) {
+                    version = mainAttribs.getValue("Bundle-Version");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+
+        }
+        return version;
+    }
+
+    public String getJarMD5(String pluginFile) {
+        String jarString = null;
+        try
+        {
+            Path path = Paths.get(pluginFile);
+            byte[] data = Files.readAllBytes(path);
+
+            MessageDigest m= MessageDigest.getInstance("MD5");
+            m.update(data);
+            jarString = new BigInteger(1,m.digest()).toString(16);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return jarString;
+    }
+
+    public List<Map<String,String>> getPluginInventory(String repoPath) {
+        List<Map<String,String>> pluginFiles = null;
+        try
+        {
+            File folder = new File(repoPath);
+            if(folder.exists())
+            {
+                pluginFiles = new ArrayList<>();
+                File[] listOfFiles = folder.listFiles();
+
+                for (int i = 0; i < listOfFiles.length; i++)
+                {
+                    if (listOfFiles[i].isFile())
+                    {
+                        try{
+                            String jarPath = listOfFiles[i].getAbsolutePath();
+                            String jarFileName = listOfFiles[i].getName();
+                            String pluginName = getPluginName(jarPath);
+                            String pluginMD5 = getJarMD5(jarPath);
+                            String pluginVersion = getPluginVersion(jarPath);
+                            //System.out.println(pluginName + " " + jarFileName + " " + pluginVersion + " " + pluginMD5);
+                            //pluginFiles.add(listOfFiles[i].getAbsolutePath());
+                            Map<String,String> pluginMap = new HashMap<>();
+                            pluginMap.put("pluginname",pluginName);
+                            pluginMap.put("jarfile",jarFileName);
+                            pluginMap.put("md5",pluginMD5);
+                            pluginMap.put("version",pluginVersion);
+                            pluginFiles.add(pluginMap);
+                        } catch(Exception ex) {
+
+                        }
+
+                    }
+
+                }
+                if(pluginFiles.isEmpty())
+                {
+                    pluginFiles = null;
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            pluginFiles = null;
+        }
+        return pluginFiles;
+    }
 
 }

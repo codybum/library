@@ -122,7 +122,6 @@ public class MsgEvent {
     public boolean dstIsLocal(String localRegion, String localAgent, String localPlugin) {
         boolean isLocal = false;
 
-        try {
             if(dst_region.equals(localRegion) && dst_agent.equals(localAgent)) {
 
                 if((localPlugin == null) && (dst_plugin == null)) {
@@ -133,11 +132,6 @@ public class MsgEvent {
                     }
                 }
             }
-
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
 
         return isLocal;
     }
@@ -154,6 +148,21 @@ public class MsgEvent {
         setParam("dst_plugin", plugin);
     }
 
+    public void setForwardDst(String dstRegion, String dstAgent, String dstPlugin) {
+        this.dst_region = dstRegion;
+        this.dst_agent = dstAgent;
+        this.dst_plugin = dstPlugin;
+        if(dstPlugin == null) {
+            if (paramsContains(dst_plugin)) {
+                removeParam(dst_plugin);
+            }
+        } else {
+            setParam("dst_plugin", dstPlugin);
+        }
+        setParam("dst_region", dstRegion);
+        setParam("dst_agent", dstAgent);
+
+    }
 
     public void setReturn() {
 
@@ -266,6 +275,27 @@ public class MsgEvent {
         params.put(key, DatatypeConverter.printBase64Binary(stringCompress(value)));
     }
 
+    public void setDataParam(String key, byte[] value) {
+        params.put(key, DatatypeConverter.printBase64Binary(value));
+    }
+
+    public void setCompressedDataParam(String key, byte[] value) {
+        params.put(key, DatatypeConverter.printBase64Binary(value));
+    }
+
+    public byte[] getDataParam(String key) {
+        byte[] byteArray = null;
+        try {
+            String value = params.get(key);
+            if (value != null) {
+                byteArray = DatatypeConverter.parseBase64Binary(value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return byteArray;
+    }
+
     public String getCompressedParam(String key) {
         String value = params.get(key);
         if (value == null)
@@ -280,8 +310,8 @@ public class MsgEvent {
         }
     }
 
-    public byte[] stringCompress(String str) {
-        byte[] dataToCompress = str.getBytes(StandardCharsets.UTF_8);
+    public byte[] dataCompress(byte[] dataToCompress) {
+
         byte[] compressedData;
         try {
             ByteArrayOutputStream byteStream =
@@ -304,4 +334,15 @@ public class MsgEvent {
         }
         return compressedData;
     }
+
+    public byte[] stringCompress(String str) {
+
+        byte[] dataToCompress = str.getBytes(StandardCharsets.UTF_8);
+        return dataCompress(dataToCompress);
+    }
+
+    public boolean paramsContains(String key) {
+        return params.containsKey(key);
+    }
+
 }
